@@ -88,3 +88,7 @@ GTAGS
 
 # spl ais files
 /spl/*.ais
+/build/
+/.settings/
+/.project
+*.cproject
