@@ -76,7 +76,6 @@
 #undef CONFIG_CMD_IMI
 #undef CONFIG_CMD_IMLS
 #undef CONFIG_CMD_NFS		/* NFS support */
-#undef CONFIG_CMD_NET		/* network support */
 
 /* turn on command-line edit/hist/auto */
 #define CONFIG_COMMAND_HISTORY
@@ -105,7 +104,7 @@
 /* Print Buffer Size */
 #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
 					sizeof(CONFIG_SYS_PROMPT) + 16)
-#define CONFIG_SYS_MAXARGS		16	/* max number of command args */
+#define CONFIG_SYS_MAXARGS		32	/* max number of command args */
 /* Boot Argument Buffer Size */
 #define CONFIG_SYS_BARGSIZE		(CONFIG_SYS_CBSIZE)
 

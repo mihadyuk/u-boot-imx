@@ -3,7 +3,7 @@
  *
  * common parts used by B&R AM335x based boards
  *
- * Copyright (C) 2013 Hannes Petermaier <oe5hpm@oevsv.at> -
+ * Copyright (C) 2013 Hannes Schmelzer <oe5hpm@oevsv.at> -
  * Bernecker & Rainer Industrieelektronik GmbH - http://www.br-automation.com
  *
  * SPDX-License-Identifier:        GPL-2.0+
@@ -17,17 +17,13 @@
 "defaultip=192.168.60.253\0" \
 "defaultsip=192.168.60.254\0" \
 "netconsole=echo switching to network console ...; " \
-"if dhcp; then " \
-"setenv ncip ${serverip}; else " \
-"setenv ncip 192.168.60.254; " \
-"setenv serverip 192.168.60.254; " \
-"setenv gatewayip 192.168.60.254; " \
-"setenv ipaddr 192.168.60.1; " \
-"fi;" \
-"setenv netdisplay0 '" \
-"setcurs 1 9; puts myip; setcurs 10 9; puts ${ipaddr};" \
-"setcurs 1 10;puts serverip; setcurs 10 10; puts ${serverip};" \
-"run netdisplay0; " \
+"if dhcp; then setenv ncip ${serverip}; " \
+"else " \
+"setenv ncip 192.168.60.254; setenv serverip 192.168.60.254; " \
+"setenv gatewayip 192.168.60.254; setenv ipaddr 192.168.60.1; " \
+"fi; " \
+"setcurs 1 9; lcdputs myip; setcurs 10 9; lcdputs ${ipaddr};" \
+"setcurs 1 10;lcdputs serverip; setcurs 10 10; lcdputs ${serverip};" \
 "setenv stdout nc;setenv stdin nc;setenv stderr nc\0"
 
 #define CONFIG_CMD_TIME
@@ -61,7 +57,6 @@
 #define CONFIG_BAUDRATE			115200
 
 /* Network defines */
-#define CONFIG_CMD_NET			/* 'bootp' and 'tftp' */
 #define CONFIG_CMD_DHCP
 #define CONFIG_BOOTP_DNS		/* Configurable parts of CMD_DHCP */
 #define CONFIG_BOOTP_SEND_HOSTNAME

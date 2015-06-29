@@ -274,7 +274,7 @@ __weak int arch_reserve_stacks(void);
  *
  * @param size	Size of DRAM (which should be displayed along with other info)
  */
-void board_show_dram(ulong size);
+void board_show_dram(phys_size_t size);
 
 /**
  * arch_fixup_fdt() - Write arch-specific information to fdt
@@ -713,6 +713,21 @@ void	flush_dcache_range(unsigned long start, unsigned long stop);
 void	invalidate_dcache_range(unsigned long start, unsigned long stop);
 void	invalidate_dcache_all(void);
 void	invalidate_icache_all(void);
+
+enum {
+	/* Disable caches (else flush caches but leave them active) */
+	CBL_DISABLE_CACHES		= 1 << 0,
+	CBL_SHOW_BOOTSTAGE_REPORT	= 1 << 1,
+
+	CBL_ALL				= 3,
+};
+
+/**
+ * Clean up ready for linux
+ *
+ * @param flags		Flags to control what is done
+ */
+int cleanup_before_linux_select(int flags);
 
 /* arch/$(ARCH)/lib/ticks.S */
 uint64_t get_ticks(void);

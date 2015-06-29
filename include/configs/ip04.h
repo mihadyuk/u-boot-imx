@@ -77,7 +77,6 @@
 #define DM9000_IO		CONFIG_DM9000_BASE
 #define DM9000_DATA		(CONFIG_DM9000_BASE + 2)
 
-#define CONFIG_LIB_RAND
 
 /*
  * Flash Settings
@@ -137,7 +136,6 @@
 /* Enable this if bootretry required; currently it's disabled */
 #define CONFIG_BOOT_RETRY_TIME	-1
 #define CONFIG_BOOTCOMMAND	"run nandboot"
-#define CONFIG_AUTOBOOT_PROMPT	"autoboot in %d seconds\n"
 
 
 /*

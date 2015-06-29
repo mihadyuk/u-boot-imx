@@ -53,7 +53,6 @@
 #define CONFIG_CMD_MISC
 #define CONFIG_CMD_MII
 #undef CONFIG_CMD_NAND
-#define CONFIG_CMD_NET
 #define CONFIG_CMD_NFS
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_REGINFO
@@ -79,7 +78,6 @@
 /* Network configuration */
 #define CONFIG_MCFFEC
 #ifdef CONFIG_MCFFEC
-#define CONFIG_NET_MULTI		1
 #define CONFIG_MII			1
 #define CONFIG_MII_INIT		1
 #define CONFIG_SYS_DISCOVER_PHY

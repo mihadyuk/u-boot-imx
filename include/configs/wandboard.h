@@ -29,7 +29,6 @@
 
 /* Command definition */
 #define CONFIG_CMD_BMODE
-#define CONFIG_CMD_SETEXPR
 
 #define CONFIG_SYS_MEMTEST_START	0x10000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 500 * SZ_1M)
@@ -58,7 +57,6 @@
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_MII
-#define CONFIG_CMD_NET
 #define CONFIG_FEC_MXC
 #define CONFIG_MII
 #define IMX_FEC_BASE			ENET_BASE_ADDR
@@ -194,10 +192,14 @@
 			"bootz; " \
 		"fi;\0" \
 	"findfdt="\
-		"if test $board_rev = MX6Q ; then " \
+		"if test $board_name = C1 && test $board_rev = MX6Q ; then " \
 			"setenv fdtfile imx6q-wandboard.dtb; fi; " \
-		"if test $board_rev = MX6DL ; then " \
+		"if test $board_name = C1 && test $board_rev = MX6DL ; then " \
 			"setenv fdtfile imx6dl-wandboard.dtb; fi; " \
+		"if test $board_name = B1 && test $board_rev = MX6Q ; then " \
+			"setenv fdtfile imx6q-wandboard-revb1.dtb; fi; " \
+		"if test $board_name = B1 && test $board_rev = MX6DL ; then " \
+			"setenv fdtfile imx6dl-wandboard-revb1.dtb; fi; " \
 		"if test $fdtfile = undefined; then " \
 			"echo WARNING: Could not determine dtb to use; fi; \0" \
 

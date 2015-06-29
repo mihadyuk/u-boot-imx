@@ -65,7 +65,6 @@
 #define CONFIG_NETCONSOLE	1
 #endif
 #define CONFIG_HOSTNAME		bf537-stamp
-#define CONFIG_LIB_RAND
 
 /*
  * Flash Settings
@@ -270,10 +269,6 @@
 /* These are for board tests */
 #if 0
 #define CONFIG_BOOTCOMMAND       "bootldr 0x203f0100"
-#define CONFIG_AUTOBOOT_KEYED
-#define CONFIG_AUTOBOOT_PROMPT \
-	"autoboot in %d seconds: press space to stop\n", bootdelay
-#define CONFIG_AUTOBOOT_STOP_STR " "
 #endif
 
 

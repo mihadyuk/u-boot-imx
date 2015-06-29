@@ -576,10 +576,6 @@ config TARGET_TBS2910
 	bool "Support tbs2910"
 	select CPU_V7
 
-config TARGET_TQMA6
-	bool "TQ Systems TQMa6 board"
-	select CPU_V7
-
 config TARGET_OT1200
 	bool "Bachmann OT1200"
 	select CPU_V7
@@ -668,6 +664,7 @@ config TEGRA
 	select SUPPORT_SPL
 	select SPL
 	select OF_CONTROL
+	select SPL_DISABLE_OF_CONTROL
 	select CPU_V7
 	select DM
 	select DM_SPI_FLASH
@@ -786,7 +783,7 @@ config TARGET_JORNADA
 	select CPU_SA1100
 
 config ARCH_UNIPHIER
-	bool "Panasonic UniPhier platform"
+	bool "Socionext UniPhier SoCs"
 	select CPU_V7
 	select SUPPORT_SPL
 	select SPL
@@ -794,6 +791,10 @@ config ARCH_UNIPHIER
 	select DM
 	select DM_SERIAL
 	select DM_I2C
+	select SPL_DISABLE_OF_CONTROL
+	help
+	  Support for UniPhier SoC family developed by Socionext Inc.
+	  (formerly, System LSI Business Division of Panasonic Corporation)
 
 config TARGET_STM32F429_DISCOVERY
 	bool "Support STM32F429 Discovery"
@@ -954,7 +955,6 @@ source "board/ti/ti816x/Kconfig"
 source "board/timll/devkit3250/Kconfig"
 source "board/toradex/colibri_pxa270/Kconfig"
 source "board/toradex/colibri_vf/Kconfig"
-source "board/tqc/tqma6/Kconfig"
 source "board/trizepsiv/Kconfig"
 source "board/ttcontrol/vision2/Kconfig"
 source "board/udoo/Kconfig"

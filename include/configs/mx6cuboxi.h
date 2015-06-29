@@ -31,7 +31,6 @@
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_MII
-#define CONFIG_CMD_NET
 #define CONFIG_MII
 #define IMX_FEC_BASE			ENET_BASE_ADDR
 #define CONFIG_FEC_XCV_TYPE		RGMII
@@ -81,7 +80,6 @@
 	"fi;"
 
 /* Command definition */
-#define CONFIG_CMD_SETEXPR
 
 #define CONFIG_MXC_UART_BASE	UART1_BASE
 #define CONFIG_CONSOLE_DEV	"ttymxc0"
@@ -187,14 +185,6 @@
 			"fi; " \
 		"fi; " \
 	"else run netboot; fi"
-
-/* Miscellaneous configurable options */
-#define CONFIG_SYS_LONGHELP
-#define CONFIG_SYS_HUSH_PARSER
-#define CONFIG_AUTO_COMPLETE
-#define CONFIG_SYS_BARGSIZE CONFIG_SYS_CBSIZE
-
-#define CONFIG_CMDLINE_EDITING
 
 /* Physical Memory Map */
 #define CONFIG_NR_DRAM_BANKS           1

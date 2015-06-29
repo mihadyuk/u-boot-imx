@@ -1,7 +1,7 @@
 VERSION = 2015
 PATCHLEVEL = 07
 SUBLEVEL =
-EXTRAVERSION = -rc1
+EXTRAVERSION = -rc2
 NAME =
 
 # *DOCUMENTATION*
@@ -876,7 +876,7 @@ endif
 # Create a file containing the configuration options the image was built with
 quiet_cmd_cpp_cfg = CFG     $@
 cmd_cpp_cfg = $(CPP) -Wp,-MD,$(depfile) $(cpp_flags) $(LDPPFLAGS) -ansi \
-		-D__ASSEMBLY__ -x assembler-with-cpp -P -dM -E -o $@ $<
+	-DDO_DEPS_ONLY -D__ASSEMBLY__ -x assembler-with-cpp -P -dM -E -o $@ $<
 
 MKIMAGEFLAGS_u-boot.img = -A $(ARCH) -T firmware -C none -O u-boot \
 	-a $(CONFIG_SYS_TEXT_BASE) -e $(CONFIG_SYS_UBOOT_START) \
@@ -1232,7 +1232,8 @@ endef
 
 define filechk_timestamp.h
 	(LC_ALL=C date +'#define U_BOOT_DATE "%b %d %C%y"'; \
-	LC_ALL=C date +'#define U_BOOT_TIME "%T"')
+	LC_ALL=C date +'#define U_BOOT_TIME "%T"'; \
+	LC_ALL=C date +'#define U_BOOT_TZ "%z"')
 endef
 
 $(version_h): include/config/uboot.release FORCE

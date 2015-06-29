@@ -9,6 +9,7 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#include <linux/kconfig.h>
 /* SPL */
 /* #if defined(CONFIG_SPL_BUILD) */
 
@@ -21,6 +22,13 @@
 #include "imx6_spl.h"
 
 /* #endif */
+
+/* place code in last 4 MiB of RAM */
+#if defined(CONFIG_MX6DL) || defined(CONFIG_MX6S)
+#define CONFIG_SYS_TEXT_BASE		0x2fc00000
+#elif defined(CONFIG_MX6Q) || defined(CONFIG_MX6D)
+#define CONFIG_SYS_TEXT_BASE		0x4fc00000
+#endif
 
 #include "mx6_common.h"
 
@@ -100,7 +108,6 @@
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_MII
-#define CONFIG_CMD_NET
 
 #define CONFIG_FEC_MXC
 #define IMX_FEC_BASE			ENET_BASE_ADDR
@@ -116,14 +123,6 @@
 /* Command definition */
 #define CONFIG_CMD_BMODE
 #define CONFIG_CMD_ITEST
-#define CONFIG_CMD_SETEXPR
-
-/* place code in last 4 MiB of RAM */
-#if defined(CONFIG_MX6DL) || defined(CONFIG_MX6S)
-#define CONFIG_SYS_TEXT_BASE		0x2fc00000
-#elif defined(CONFIG_MX6Q) || defined(CONFIG_MX6D)
-#define CONFIG_SYS_TEXT_BASE		0x4fc00000
-#endif
 
 #define CONFIG_ENV_SIZE			(SZ_8K)
 /* Size of malloc() pool */
@@ -368,10 +367,6 @@
 		"echo ... failed\0"                                            \
 	"panicboot=echo No boot device !!! reset\0"                            \
 	TQMA6_EXTRA_BOOTDEV_ENV_SETTINGS                                      \
-
-/* Print Buffer Size */
-#define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
-					 sizeof(CONFIG_SYS_PROMPT) + 16)
 
 #define CONFIG_STACKSIZE		(128u * SZ_1K)
 
