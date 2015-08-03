@@ -32,7 +32,8 @@ dtb-$(CONFIG_TEGRA) += tegra20-harmony.dtb \
 	tegra114-dalmore.dtb \
 	tegra124-jetson-tk1.dtb \
 	tegra124-nyan-big.dtb \
-	tegra124-venice2.dtb
+	tegra124-venice2.dtb \
+	tegra210-p2571.dtb
 dtb-$(CONFIG_ARCH_UNIPHIER) += \
 	uniphier-ph1-sld3-ref.dtb \
 	uniphier-ph1-pro4-ref.dtb \
@@ -45,6 +46,7 @@ dtb-$(CONFIG_ARCH_ZYNQ) += zynq-zc702.dtb \
 	zynq-microzed.dtb \
 	zynq-picozed.dtb \
 	zynq-zc770-xm010.dtb \
+	zynq-zc770-xm011.dtb \
 	zynq-zc770-xm012.dtb \
 	zynq-zc770-xm013.dtb
 dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb
@@ -57,6 +59,8 @@ dtb-$(CONFIG_TARGET_STV0991) += stv0991.dtb
 
 dtb-$(CONFIG_LS102XA) += ls1021a-qds.dtb \
 	ls1021a-twr.dtb
+dtb-$(CONFIG_FSL_LSCH3) += fsl-ls2085a-qds.dtb \
+	fsl-ls2085a-rdb.dtb
 
 dtb-$(CONFIG_MACH_SUN4I) += \
 	sun4i-a10-a1000.dtb \

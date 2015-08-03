@@ -10,9 +10,10 @@ NAME =
 # Comments in this file are targeted only to the developer, do not
 # expect to learn how to build the kernel reading this file.
 
-# Do not use make's built-in rules and variables
-# (this increases performance and avoids hard-to-debug behaviour);
-MAKEFLAGS += -rR
+# o Do not use make's built-in rules and variables
+#   (this increases performance and avoids hard-to-debug behaviour);
+# o Look for make include files relative to root of kernel src
+MAKEFLAGS += -rR --include-dir=$(CURDIR)
 
 # Avoid funny character set dependencies
 unexport LC_ALL
@@ -319,12 +320,9 @@ endif
 export KBUILD_MODULES KBUILD_BUILTIN
 export KBUILD_CHECKSRC KBUILD_SRC KBUILD_EXTMOD
 
-# Look for make include files relative to root of kernel src
-MAKEFLAGS += --include-dir=$(srctree)
-
 # We need some generic definitions (do not try to remake the file).
-$(srctree)/scripts/Kbuild.include: ;
-include $(srctree)/scripts/Kbuild.include
+scripts/Kbuild.include: ;
+include scripts/Kbuild.include
 
 # Make variables (CC, etc...)
 
@@ -437,7 +435,7 @@ endif
 ifeq ($(KBUILD_EXTMOD),)
         ifneq ($(filter config %config,$(MAKECMDGOALS)),)
                 config-targets := 1
-                ifneq ($(filter-out config %config,$(MAKECMDGOALS)),)
+                ifneq ($(words $(MAKECMDGOALS)),1)
                         mixed-targets := 1
                 endif
         endif
@@ -518,8 +516,8 @@ ifneq ($(wildcard include/config/auto.conf),)
 autoconf_is_old := $(shell find . -path ./$(KCONFIG_CONFIG) -newer \
 						include/config/auto.conf)
 ifeq ($(autoconf_is_old),)
-include $(srctree)/config.mk
-include $(srctree)/arch/$(ARCH)/Makefile
+include config.mk
+include arch/$(ARCH)/Makefile
 endif
 endif
 endif
@@ -595,7 +593,7 @@ endif
 
 export CONFIG_SYS_TEXT_BASE
 
-include $(srctree)/scripts/Makefile.extrawarn
+include scripts/Makefile.extrawarn
 
 # Add user supplied CPPFLAGS, AFLAGS and CFLAGS as the last assignments
 KBUILD_CPPFLAGS += $(KCPPFLAGS)
@@ -738,7 +736,11 @@ ALL-$(CONFIG_ONENAND_U_BOOT) += u-boot-onenand.bin
 ifeq ($(CONFIG_SPL_FSL_PBL),y)
 ALL-$(CONFIG_RAMBOOT_PBL) += u-boot-with-spl-pbl.bin
 else
+ifneq ($(CONFIG_SECURE_BOOT), y)
+# For Secure Boot The Image needs to be signed and Header must also
+# be included. So The image has to be built explicitly
 ALL-$(CONFIG_RAMBOOT_PBL) += u-boot.pbl
+endif
 endif
 ALL-$(CONFIG_SPL) += spl/u-boot-spl.bin
 ALL-$(CONFIG_SPL_FRAMEWORK) += u-boot.img
@@ -887,7 +889,7 @@ MKIMAGEFLAGS_u-boot.kwb = -n $(srctree)/$(CONFIG_SYS_KWD_CONFIG:"%"=%) \
 	-T kwbimage -a $(CONFIG_SYS_TEXT_BASE) -e $(CONFIG_SYS_TEXT_BASE)
 
 MKIMAGEFLAGS_u-boot-spl.kwb = -n $(srctree)/$(CONFIG_SYS_KWD_CONFIG:"%"=%) \
-	-T kwbimage -a $(CONFIG_SYS_TEXT_BASE) -e $(CONFIG_SYS_TEXT_BASE)
+	-T kwbimage -a $(CONFIG_SPL_TEXT_BASE) -e $(CONFIG_SPL_TEXT_BASE)
 
 MKIMAGEFLAGS_u-boot.pbl = -n $(srctree)/$(CONFIG_SYS_FSL_PBL_RCW:"%"=%) \
 		-R $(srctree)/$(CONFIG_SYS_FSL_PBL_PBI:"%"=%) -T pblimage
@@ -1232,9 +1234,10 @@ define filechk_version.h
 endef
 
 define filechk_timestamp.h
-	(LC_ALL=C date +'#define U_BOOT_DATE "%b %d %C%y"'; \
-	LC_ALL=C date +'#define U_BOOT_TIME "%T"'; \
-	LC_ALL=C date +'#define U_BOOT_TZ "%z"')
+	(SOURCE_DATE="$${SOURCE_DATE_EPOCH:+@$$SOURCE_DATE_EPOCH}"; \
+	LC_ALL=C date -u -d "$${SOURCE_DATE:-now}" +'#define U_BOOT_DATE "%b %d %C%y"'; \
+	LC_ALL=C date -u -d "$${SOURCE_DATE:-now}" +'#define U_BOOT_TIME "%T"'; \
+	LC_ALL=C date -u -d "$${SOURCE_DATE:-now}" +'#define U_BOOT_TZ "%z"' )
 endef
 
 $(version_h): include/config/uboot.release FORCE
@@ -1242,12 +1245,6 @@ $(version_h): include/config/uboot.release FORCE
 
 $(timestamp_h): $(srctree)/Makefile FORCE
 	$(call filechk,timestamp.h)
-
-# ---------------------------------------------------------------------------
-
-PHONY += depend dep
-depend dep:
-	@echo '*** Warning: make $@ is unnecessary now.'
 
 # ---------------------------------------------------------------------------
 quiet_cmd_cpp_lds = LDS     $@
@@ -1259,7 +1256,7 @@ u-boot.lds: $(LDSCRIPT) prepare FORCE
 
 spl/u-boot-spl.bin: spl/u-boot-spl
 	@:
-spl/u-boot-spl: tools prepare
+spl/u-boot-spl: tools prepare $(if $(CONFIG_OF_SEPARATE),dts/dt.dtb)
 	$(Q)$(MAKE) obj=spl -f $(srctree)/scripts/Makefile.spl all
 
 spl/sunxi-spl.bin: spl/u-boot-spl
@@ -1548,11 +1545,6 @@ ifneq ($(cmd_files),)
   $(cmd_files): ;	# Do not try to update included dependency files
   include $(cmd_files)
 endif
-
-# Shorthand for $(Q)$(MAKE) -f scripts/Makefile.clean obj=dir
-# Usage:
-# $(Q)$(MAKE) $(clean)=dir
-clean := -f $(srctree)/scripts/Makefile.clean obj
 
 endif	# skip-makefile
 

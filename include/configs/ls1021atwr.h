@@ -9,6 +9,8 @@
 
 #define CONFIG_LS102XA
 
+#define CONFIG_ARMV7_PSCI
+
 #define CONFIG_SYS_GENERIC_BOARD
 
 #define CONFIG_DISPLAY_CPUINFO
@@ -24,6 +26,44 @@
 
 #define CONFIG_SYS_INIT_RAM_ADDR	OCRAM_BASE_ADDR
 #define CONFIG_SYS_INIT_RAM_SIZE	OCRAM_SIZE
+
+/*
+ * USB
+ */
+
+/*
+ * EHCI Support - disbaled by default as
+ * there is no signal coming out of soc on
+ * this board for this controller. However,
+ * the silicon still has this controller,
+ * and anyone can use this controller by
+ * taking signals out on their board.
+ */
+
+/*#define CONFIG_HAS_FSL_DR_USB*/
+
+#ifdef CONFIG_HAS_FSL_DR_USB
+#define CONFIG_USB_EHCI
+#define CONFIG_USB_EHCI_FSL
+#define CONFIG_EHCI_HCD_INIT_AFTER_RESET
+#endif
+
+/* XHCI Support - enabled by default */
+#define CONFIG_HAS_FSL_XHCI_USB
+
+#ifdef CONFIG_HAS_FSL_XHCI_USB
+#define CONFIG_USB_XHCI_FSL
+#define CONFIG_USB_XHCI_DWC3
+#define CONFIG_USB_XHCI
+#define CONFIG_USB_MAX_CONTROLLER_COUNT        1
+#define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS     2
+#endif
+
+#if defined(CONFIG_HAS_FSL_DR_USB) || defined(CONFIG_HAS_FSL_XHCI_USB)
+#define CONFIG_CMD_USB
+#define CONFIG_USB_STORAGE
+#define CONFIG_CMD_EXT2
+#endif
 
 /*
  * Generic Timer Definitions
