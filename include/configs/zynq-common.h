@@ -68,7 +68,6 @@
 
 /* SPI */
 #ifdef CONFIG_ZYNQ_SPI
-# define CONFIG_SPI_FLASH
 # define CONFIG_SPI_FLASH_SST
 # define CONFIG_CMD_SF
 #endif
@@ -111,10 +110,10 @@
 # define CONFIG_CI_UDC           /* ChipIdea CI13xxx UDC */
 # define CONFIG_USB_GADGET
 # define CONFIG_USB_GADGET_DUALSPEED
-# define CONFIG_USBDOWNLOAD_GADGET
+# define CONFIG_USB_GADGET_DOWNLOAD
 # define CONFIG_SYS_DFU_DATA_BUF_SIZE	0x600000
 # define DFU_DEFAULT_POLL_TIMEOUT	300
-# define CONFIG_DFU_FUNCTION
+# define CONFIG_USB_FUNCTION_DFU
 # define CONFIG_DFU_RAM
 # define CONFIG_USB_GADGET_VBUS_DRAW	2
 # define CONFIG_G_DNL_VENDOR_NUM	0x03FD
@@ -124,7 +123,7 @@
 # define CONFIG_USB_CABLE_CHECK
 # define CONFIG_CMD_DFU
 # define CONFIG_CMD_THOR_DOWNLOAD
-# define CONFIG_THOR_FUNCTION
+# define CONFIG_USB_FUNCTION_THOR
 # define DFU_ALT_INFO_RAM \
 	"dfu_ram_info=" \
 	"set dfu_alt_info " \
@@ -204,7 +203,6 @@
 
 # define CONFIG_ENV_SECT_SIZE		CONFIG_ENV_SIZE
 # define CONFIG_ENV_OFFSET		0xE0000
-# define CONFIG_CMD_SAVEENV
 #endif
 
 /* Default environment */
@@ -272,7 +270,6 @@
 #define CONFIG_FPGA
 #define CONFIG_FPGA_XILINX
 #define CONFIG_FPGA_ZYNQPL
-#define CONFIG_CMD_FPGA
 #define CONFIG_CMD_FPGA_LOADMK
 #define CONFIG_CMD_FPGA_LOADP
 #define CONFIG_CMD_FPGA_LOADBP
@@ -300,8 +297,6 @@
 #define CONFIG_SYS_LDSCRIPT  "arch/arm/mach-zynq/u-boot.lds"
 
 /* Commands */
-#include <config_cmd_default.h>
-
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_MII

@@ -29,11 +29,6 @@
 
 #define CONFIG_MXC_UART
 
-#define CONFIG_CMD_FUSE
-#ifdef CONFIG_CMD_FUSE
-#define CONFIG_MXC_OCOTP
-#endif
-
 /* I2C Configs */
 #define CONFIG_CMD_I2C
 #define CONFIG_SYS_I2C
@@ -68,7 +63,6 @@
 
 #define CONFIG_CMD_SF
 #ifdef CONFIG_CMD_SF
-#define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_SST
 #define CONFIG_MXC_SPI
 #define CONFIG_SF_DEFAULT_BUS		0
@@ -76,9 +70,6 @@
 #define CONFIG_SF_DEFAULT_SPEED		20000000
 #define CONFIG_SF_DEFAULT_MODE		SPI_MODE_0
 #endif
-
-/* Command definition */
-#undef CONFIG_CMD_FPGA
 
 #define CONFIG_CMD_BMODE
 

@@ -16,6 +16,14 @@
 #include "../board/freescale/common/ics307_clk.h"
 
 #ifdef CONFIG_RAMBOOT_PBL
+#ifdef CONFIG_SECURE_BOOT
+#define CONFIG_RAMBOOT_TEXT_BASE	CONFIG_SYS_TEXT_BASE
+#define CONFIG_RESET_VECTOR_ADDRESS	0xfffffffc
+#ifdef CONFIG_NAND
+#define CONFIG_RAMBOOT_NAND
+#endif
+#define CONFIG_BOOTSCRIPT_COPY_RAM
+#else
 #define CONFIG_RAMBOOT_TEXT_BASE	CONFIG_SYS_TEXT_BASE
 #define CONFIG_RESET_VECTOR_ADDRESS	0xfffffffc
 #define CONFIG_SYS_FSL_PBL_PBI board/freescale/corenet_ds/pbi.cfg
@@ -27,6 +35,7 @@
 #define CONFIG_SYS_FSL_PBL_RCW board/freescale/corenet_ds/rcw_p5020ds.cfg
 #elif defined(CONFIG_P5040DS)
 #define CONFIG_SYS_FSL_PBL_RCW board/freescale/corenet_ds/rcw_p5040ds.cfg
+#endif
 #endif
 #endif
 
@@ -408,7 +417,6 @@
  * eSPI - Enhanced SPI
  */
 #define CONFIG_FSL_ESPI
-#define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_SPANSION
 #define CONFIG_CMD_SF
 #define CONFIG_SF_DEFAULT_SPEED         10000000
@@ -620,8 +628,6 @@
 /*
  * Command line configuration.
  */
-#include <config_cmd_default.h>
-
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_ELF
 #define CONFIG_CMD_ERRATA

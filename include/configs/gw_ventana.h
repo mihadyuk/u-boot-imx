@@ -48,11 +48,8 @@
 
 /* Driver Model */
 #ifndef CONFIG_SPL_BUILD
-#define CONFIG_DM
 #define CONFIG_DM_GPIO
-#define CONFIG_DM_SERIAL
 #define CONFIG_DM_THERMAL
-#define CONFIG_CMD_DM
 #endif
 
 /* GPIO */
@@ -168,11 +165,6 @@
 #define CONFIG_CMD_EECONFIG      /* Gateworks EEPROM config cmd */
 #define CONFIG_CMD_UBI
 #define CONFIG_RBTREE
-#define CONFIG_CMD_FUSE          /* eFUSE read/write support */
-#ifdef CONFIG_CMD_FUSE
-#define CONFIG_MXC_OCOTP
-#endif
-
 
 /* Ethernet support */
 #define CONFIG_FEC_MXC
@@ -208,8 +200,8 @@
 /* USB Mass Storage Gadget */
 #define CONFIG_USB_GADGET
 #define CONFIG_CMD_USB_MASS_STORAGE
-#define CONFIG_USB_GADGET_MASS_STORAGE
-#define CONFIG_USBDOWNLOAD_GADGET
+#define CONFIG_USB_FUNCTION_MASS_STORAGE
+#define CONFIG_USB_GADGET_DOWNLOAD
 #define CONFIG_USB_GADGET_VBUS_DRAW    2
 
 /* Netchip IDs */

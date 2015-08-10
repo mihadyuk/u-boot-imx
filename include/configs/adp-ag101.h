@@ -9,7 +9,7 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#include <asm/arch/ag101.h>
+#include <asm/arch-ag101/ag101.h>
 
 /*
  * CPU and Board Configuration Options
@@ -109,8 +109,6 @@
 /*
  * Command line configuration.
  */
-#include <config_cmd_default.h>
-
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_PING

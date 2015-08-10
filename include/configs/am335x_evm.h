@@ -54,12 +54,12 @@
 		"${optargs} " \
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
-	"nandroot=ubi0:rootfs rw ubi.mtd=9,2048\0" \
+	"nandroot=ubi0:rootfs rw ubi.mtd=NAND.file-system,2048\0" \
 	"nandrootfstype=ubifs rootwait=1\0" \
 	"nandboot=echo Booting from nand ...; " \
 		"run nandargs; " \
-		"nand read ${fdtaddr} u-boot-spl-os; " \
-		"nand read ${loadaddr} kernel; " \
+		"nand read ${fdtaddr} NAND.u-boot-spl-os; " \
+		"nand read ${loadaddr} NAND.kernel; " \
 		"bootz ${loadaddr} - ${fdtaddr}\0"
 #else
 #define NANDARGS ""
@@ -248,7 +248,7 @@
 					"128k(NAND.u-boot-env)," \
 					"128k(NAND.u-boot-env.backup1)," \
 					"8m(NAND.kernel)," \
-					"-(NAND.rootfs)"
+					"-(NAND.file-system)"
 #define CONFIG_SYS_NAND_U_BOOT_OFFS	0x000c0000
 #undef CONFIG_ENV_IS_NOWHERE
 #define CONFIG_ENV_IS_IN_NAND
@@ -287,7 +287,7 @@
 #define CONFIG_MUSB_PIO_ONLY
 #define CONFIG_MUSB_DISABLE_BULK_COMBINE_SPLIT
 #define CONFIG_USB_GADGET
-#define CONFIG_USBDOWNLOAD_GADGET
+#define CONFIG_USB_GADGET_DOWNLOAD
 #define CONFIG_USB_GADGET_DUALSPEED
 #define CONFIG_USB_GADGET_VBUS_DRAW	2
 #define CONFIG_MUSB_HOST
@@ -298,10 +298,11 @@
 
 #ifndef CONFIG_SPL_USBETH_SUPPORT
 /* Fastboot */
+#define CONFIG_USB_FUNCTION_FASTBOOT
 #define CONFIG_CMD_FASTBOOT
 #define CONFIG_ANDROID_BOOT_IMAGE
-#define CONFIG_USB_FASTBOOT_BUF_ADDR	CONFIG_SYS_LOAD_ADDR
-#define CONFIG_USB_FASTBOOT_BUF_SIZE	0x07000000
+#define CONFIG_FASTBOOT_BUF_ADDR	CONFIG_SYS_LOAD_ADDR
+#define CONFIG_FASTBOOT_BUF_SIZE	0x07000000
 
 /* To support eMMC booting */
 #define CONFIG_STORAGE_EMMC
@@ -344,7 +345,7 @@
 
 /* USB Device Firmware Update support */
 #ifndef CONFIG_SPL_BUILD
-#define CONFIG_DFU_FUNCTION
+#define CONFIG_USB_FUNCTION_DFU
 #define CONFIG_DFU_MMC
 #define CONFIG_CMD_DFU
 #define DFU_ALT_INFO_MMC \
@@ -429,7 +430,6 @@
 
 /* SPI flash. */
 #define CONFIG_CMD_SF
-#define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_SF_DEFAULT_SPEED		24000000
 
@@ -452,7 +452,6 @@
  */
 #if defined(CONFIG_NOR)
 #undef CONFIG_SYS_NO_FLASH
-#define CONFIG_CMD_FLASH
 #define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #define CONFIG_SYS_FLASH_PROTECTION
 #define CONFIG_SYS_FLASH_CFI

@@ -58,16 +58,8 @@
 /* PWM */
 #define CONFIG_PWM			1
 
-/* It should define before config_cmd_default.h */
 #define CONFIG_SYS_NO_FLASH		1
 
-/* Command definition */
-#include <config_cmd_default.h>
-
-#undef CONFIG_CMD_FPGA
-#undef CONFIG_CMD_MISC
-#undef CONFIG_CMD_NFS
-#undef CONFIG_CMD_XIMG
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_REGINFO
 #define CONFIG_CMD_ONENAND
@@ -76,15 +68,15 @@
 #define CONFIG_CMD_GPT
 
 /* USB Composite download gadget - g_dnl */
-#define CONFIG_USBDOWNLOAD_GADGET
-#define CONFIG_DFU_FUNCTION
+#define CONFIG_USB_GADGET_DOWNLOAD
+#define CONFIG_USB_FUNCTION_DFU
 #define CONFIG_DFU_MMC
 #define CONFIG_SYS_DFU_DATA_BUF_SIZE SZ_32M
 #define DFU_DEFAULT_POLL_TIMEOUT 300
 
 /* TIZEN THOR downloader support */
 #define CONFIG_CMD_THOR_DOWNLOAD
-#define CONFIG_THOR_FUNCTION
+#define CONFIG_USB_FUNCTION_THOR
 
 /* USB Samsung's IDs */
 #define CONFIG_G_DNL_VENDOR_NUM 0x04E8
@@ -283,7 +275,7 @@
 #define CONFIG_USB_GADGET_DUALSPEED
 #define CONFIG_USB_GADGET_VBUS_DRAW 2
 #define CONFIG_CMD_USB_MASS_STORAGE
-#define CONFIG_USB_GADGET_MASS_STORAGE
+#define CONFIG_USB_FUNCTION_MASS_STORAGE
 
 #define CONFIG_OF_LIBFDT
 

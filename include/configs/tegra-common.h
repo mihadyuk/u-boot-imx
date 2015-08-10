@@ -18,8 +18,11 @@
 
 #include <asm/arch/tegra.h>		/* get chip and board defs */
 
+/* Use the Tegra US timer on ARMv7, but the architected timer on ARMv8. */
+#ifndef CONFIG_ARM64
 #define CONFIG_SYS_TIMER_RATE		1000000
 #define CONFIG_SYS_TIMER_COUNTER	NV_PA_TMRUS_BASE
+#endif
 
 /*
  * Display CPU and Board information
@@ -43,7 +46,9 @@
 #define CONFIG_SYS_MALLOC_LEN		(4 << 20)	/* 4MB  */
 #endif
 
+#ifndef CONFIG_ARM64
 #define CONFIG_SYS_NONCACHED_MEMORY	(1 << 20)       /* 1 MiB */
+#endif
 
 /*
  * NS16550 Configuration
@@ -66,16 +71,6 @@
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_BAUDRATE			115200
-
-/* include default commands */
-#include <config_cmd_default.h>
-
-/* remove unused commands */
-#undef CONFIG_CMD_FLASH		/* flinfo, erase, protect */
-#undef CONFIG_CMD_FPGA		/* FPGA configuration support */
-#undef CONFIG_CMD_IMI
-#undef CONFIG_CMD_IMLS
-#undef CONFIG_CMD_NFS		/* NFS support */
 
 /* turn on command-line edit/hist/auto */
 #define CONFIG_COMMAND_HISTORY
@@ -111,8 +106,10 @@
 #define CONFIG_SYS_MEMTEST_START	(NV_PA_SDRC_CS0 + 0x600000)
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x100000)
 
+#ifndef CONFIG_ARM64
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_USE_ARCH_MEMCPY
+#endif
 #endif
 
 /*-----------------------------------------------------------------------

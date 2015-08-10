@@ -115,6 +115,7 @@ struct boot_mode boot_modes[] = {
 	{ 0x78, "sata" },
 	{ 0x9C, "pex"  },
 	{ 0x69, "uart" },
+	{ 0xAE, "sdio" },
 	{},
 };
 
@@ -419,6 +420,18 @@ static size_t image_headersz_v1(struct image_tool_params *params,
 		if (hasext)
 			*hasext = 1;
 	}
+
+#if defined(CONFIG_SYS_U_BOOT_OFFS)
+	if (headersz > CONFIG_SYS_U_BOOT_OFFS) {
+		fprintf(stderr, "Error: Image header (incl. SPL image) too big!\n");
+		fprintf(stderr, "header=0x%x CONFIG_SYS_U_BOOT_OFFS=0x%x!\n",
+			(int)headersz, CONFIG_SYS_U_BOOT_OFFS);
+		fprintf(stderr, "Increase CONFIG_SYS_U_BOOT_OFFS!\n");
+		return 0;
+	} else {
+		headersz = CONFIG_SYS_U_BOOT_OFFS;
+	}
+#endif
 
 	/*
 	 * The payload should be aligned on some reasonable
@@ -869,16 +882,6 @@ static int kwbimage_generate(struct image_tool_params *params,
 			sizeof(struct ext_hdr_v0);
 	} else {
 		alloc_len = image_headersz_v1(params, NULL);
-#if defined(CONFIG_SYS_SPI_U_BOOT_OFFS)
-		if (alloc_len > CONFIG_SYS_SPI_U_BOOT_OFFS) {
-			fprintf(stderr, "Error: Image header (incl. SPL image) too big!\n");
-			fprintf(stderr, "header=0x%x CONFIG_SYS_SPI_U_BOOT_OFFS=0x%x!\n",
-				alloc_len, CONFIG_SYS_SPI_U_BOOT_OFFS);
-			fprintf(stderr, "Increase CONFIG_SYS_SPI_U_BOOT_OFFS!\n");
-		} else {
-			alloc_len = CONFIG_SYS_SPI_U_BOOT_OFFS;
-		}
-#endif
 	}
 
 	hdr = malloc(alloc_len);

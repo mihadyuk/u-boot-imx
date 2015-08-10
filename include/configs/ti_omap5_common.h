@@ -40,14 +40,12 @@
 #define CONFIG_SYS_DEFAULT_LPDDR2_TIMINGS
 #endif
 
-#ifndef CONFIG_SPL_BUILD
 #define CONFIG_PALMAS_POWER
-#endif
 
 #include <asm/arch/cpu.h>
 #include <asm/arch/omap.h>
 
-#include <configs/ti_armv7_common.h>
+#include <configs/ti_armv7_omap.h>
 
 /*
  * Hardware drivers
@@ -56,9 +54,6 @@
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #define CONFIG_SYS_NS16550_CLK		48000000
-
-/* Per-SoC commands */
-#undef CONFIG_CMD_NFS
 
 /*
  * Environment setup
@@ -71,6 +66,7 @@
 #define DFUARGS
 #endif
 
+#ifndef CONFIG_SPL_BUILD
 #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	DEFAULT_LINUX_BOOT_ENV \
@@ -137,7 +133,7 @@
 	"if test ${dofastboot} -eq 1; then " \
 		"echo Boot fastboot requested, resetting dofastboot ...;" \
 		"setenv dofastboot 0; saveenv;" \
-		"echo Booting into fastboot ...; fastboot;" \
+		"echo Booting into fastboot ...; fastboot 0;" \
 	"fi;" \
 	"run findfdt; " \
 	"run mmcboot;" \
@@ -146,6 +142,7 @@
 	"setenv mmcroot /dev/mmcblk0p2 rw; " \
 	"run mmcboot;" \
 	""
+#endif
 
 
 /*

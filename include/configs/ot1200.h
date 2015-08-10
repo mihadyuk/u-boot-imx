@@ -16,10 +16,6 @@
 #define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_MISC_INIT_R
 
-/* FUSE Configs */
-#define CONFIG_CMD_FUSE
-#define CONFIG_MXC_OCOTP
-
 /* UART Configs */
 #define CONFIG_MXC_UART
 #define CONFIG_MXC_UART_BASE           UART1_BASE
@@ -27,7 +23,6 @@
 /* SF Configs */
 #define CONFIG_CMD_SF
 #define CONFIG_SPI
-#define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_STMICRO
 #define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_SPI_FLASH_MACRONIX

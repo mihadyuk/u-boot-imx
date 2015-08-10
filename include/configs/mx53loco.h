@@ -43,6 +43,7 @@
 #define CONFIG_MMC
 #define CONFIG_CMD_MMC
 #define CONFIG_GENERIC_MMC
+#define CONFIG_CMD_FS_GENERIC
 #define CONFIG_CMD_FAT
 #define CONFIG_CMD_EXT2
 #define CONFIG_DOS_PARTITION
@@ -92,11 +93,8 @@
 #define CONFIG_BAUDRATE			115200
 
 /* Command definition */
-#include <config_cmd_default.h>
 #define CONFIG_CMD_BOOTZ
 #define CONFIG_SUPPORT_RAW_INITRD
-
-#undef CONFIG_CMD_IMLS
 
 #define CONFIG_BOOTDELAY	1
 
@@ -116,11 +114,11 @@
 	"mmcroot=/dev/mmcblk0p2 rw rootwait\0" \
 	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} root=${mmcroot}\0" \
 	"loadbootscript=" \
-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
 		"source\0" \
-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 	"mmcboot=echo Booting from mmc ...; " \
 		"run mmcargs; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \

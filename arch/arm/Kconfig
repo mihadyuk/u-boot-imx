@@ -227,6 +227,9 @@ config TARGET_STV0991
 	select CPU_V7
 	select DM
 	select DM_SERIAL
+	select DM_SPI
+	select DM_SPI_FLASH
+	select SPI_FLASH
 
 config TARGET_X600
 	bool "Support x600"
@@ -346,8 +349,13 @@ config TARGET_DRACO
 	select CPU_V7
 	select SUPPORT_SPL
 
-config TARGET_DXR2
-	bool "Support dxr2"
+config TARGET_THUBAN
+	bool "Support thuban"
+	select CPU_V7
+	select SUPPORT_SPL
+
+config TARGET_RASTABAN
+	bool "Support rastaban"
 	select CPU_V7
 	select SUPPORT_SPL
 
@@ -363,6 +371,14 @@ config TARGET_RUT
 
 config TARGET_PENGWYN
 	bool "Support pengwyn"
+	select CPU_V7
+	select SUPPORT_SPL
+	select DM
+	select DM_SERIAL
+	select DM_GPIO
+
+config TARGET_AM335X_BALTOS
+	bool "Support am335x_baltos"
 	select CPU_V7
 	select SUPPORT_SPL
 	select DM
@@ -495,6 +511,7 @@ config TARGET_VISION2
 config TARGET_UDOO
 	bool "Support udoo"
 	select CPU_V7
+	select SUPPORT_SPL
 
 config TARGET_WANDBOARD
 	bool "Support wandboard"
@@ -562,6 +579,13 @@ config TARGET_MX6SXSABRESD
 	select DM
 	select DM_THERMAL
 
+config TARGET_MX6UL_14X14_EVK
+	bool "Support mx6ul_14x14_evk"
+	select CPU_V7
+	select DM
+	select DM_THERMAL
+	select SUPPORT_SPL
+
 config TARGET_GW_VENTANA
 	bool "Support gw_ventana"
 	select CPU_V7
@@ -609,14 +633,6 @@ config RMOBILE
 	bool "Renesas ARM SoCs"
 	select CPU_V7
 
-config TARGET_CM_FX6
-	bool "Support cm_fx6"
-	select CPU_V7
-	select SUPPORT_SPL
-	select DM
-	select DM_SERIAL
-	select DM_GPIO
-
 config ARCH_SOCFPGA
 	bool "Altera SOCFPGA family"
 	select CPU_V7
@@ -627,11 +643,17 @@ config ARCH_SOCFPGA
 
 config ARCH_SUNXI
 	bool "Support sunxi (Allwinner) SoCs"
+	select CMD_USB
 	select DM
 	select DM_GPIO
+	select DM_ETH
+	select DM_SERIAL
+	select DM_USB
 	select OF_CONTROL
 	select OF_SEPARATE
 	select SPL_DISABLE_OF_CONTROL
+	select USB
+	select USB_STORAGE
 
 config TARGET_SNOWBALL
 	bool "Support snowball"
@@ -653,25 +675,18 @@ config ARCH_ZYNQ
 	bool "Xilinx Zynq Platform"
 	select CPU_V7
 	select SUPPORT_SPL
+	select OF_CONTROL
+	select SPL_DISABLE_OF_CONTROL
 	select DM
+	select DM_SPI
+	select DM_SPI_FLASH
 
-config TARGET_XILINX_ZYNQMP
+config ARCH_ZYNQMP
 	bool "Support Xilinx ZynqMP Platform"
 	select ARM64
 
 config TEGRA
 	bool "NVIDIA Tegra"
-	select SUPPORT_SPL
-	select SPL
-	select OF_CONTROL
-	select SPL_DISABLE_OF_CONTROL
-	select CPU_V7
-	select DM
-	select DM_SPI_FLASH
-	select DM_SERIAL
-	select DM_I2C
-	select DM_SPI
-	select DM_GPIO
 
 config TARGET_VEXPRESS64_AEMV8A
 	bool "Support vexpress_aemv8a"
@@ -848,6 +863,8 @@ source "arch/arm/mach-zynq/Kconfig"
 
 source "arch/arm/cpu/armv7/Kconfig"
 
+source "arch/arm/cpu/armv8/zynqmp/Kconfig"
+
 source "arch/arm/cpu/armv8/Kconfig"
 
 source "arch/arm/imx-common/Kconfig"
@@ -903,6 +920,7 @@ source "board/freescale/mx6qsabreauto/Kconfig"
 source "board/freescale/mx6sabresd/Kconfig"
 source "board/freescale/mx6slevk/Kconfig"
 source "board/freescale/mx6sxsabresd/Kconfig"
+source "board/freescale/mx6ul_14x14_evk/Kconfig"
 source "board/freescale/vf610twr/Kconfig"
 source "board/gateworks/gw_ventana/Kconfig"
 source "board/genesi/mx51_efikamx/Kconfig"
@@ -959,12 +977,12 @@ source "board/trizepsiv/Kconfig"
 source "board/ttcontrol/vision2/Kconfig"
 source "board/udoo/Kconfig"
 source "board/vpac270/Kconfig"
+source "board/vscom/baltos/Kconfig"
 source "board/wandboard/Kconfig"
 source "board/warp/Kconfig"
 source "board/woodburn/Kconfig"
 source "board/work-microwave/work_92105/Kconfig"
 source "board/xaeniax/Kconfig"
-source "board/xilinx/zynqmp/Kconfig"
 source "board/zipitz2/Kconfig"
 
 source "arch/arm/Kconfig.debug"

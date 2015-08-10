@@ -19,6 +19,7 @@
 #define CONFIG_OMAP		1	/* in a TI OMAP core */
 #define CONFIG_OMAP3_AM3517EVM	1	/* working with AM3517EVM */
 #define CONFIG_OMAP_COMMON
+#define CONFIG_SYS_GENERIC_BOARD
 /* Common ARM Erratas */
 #define CONFIG_ARM_ERRATA_454179
 #define CONFIG_ARM_ERRATA_430973
@@ -40,6 +41,8 @@
 #define V_SCLK			(V_OSCK >> 1)
 
 #define CONFIG_MISC_INIT_R
+
+#define CONFIG_OF_LIBFDT
 
 #define CONFIG_CMDLINE_TAG		1	/* enable passing of ATAGs */
 #define CONFIG_SETUP_MEMORY_TAGS	1
@@ -126,8 +129,6 @@
 #endif /* CONFIG_USB_MUSB_AM35X */
 
 /* commands to include */
-#include <config_cmd_default.h>
-
 #define CONFIG_CMD_EXT2		/* EXT2 Support			*/
 #define CONFIG_CMD_FAT		/* FAT support			*/
 #define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
@@ -138,10 +139,6 @@
 #define CONFIG_CMD_DHCP
 #undef CONFIG_CMD_PING
 
-#undef CONFIG_CMD_FLASH		/* flinfo, erase, protect	*/
-#undef CONFIG_CMD_FPGA		/* FPGA configuration Support	*/
-#undef CONFIG_CMD_IMI		/* iminfo			*/
-#undef CONFIG_CMD_IMLS		/* List all found images	*/
 
 #define CONFIG_SYS_NO_FLASH
 #define CONFIG_SYS_I2C

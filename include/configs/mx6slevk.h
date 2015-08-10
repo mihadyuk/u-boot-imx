@@ -163,7 +163,6 @@
 
 #define CONFIG_CMD_SF
 #ifdef CONFIG_CMD_SF
-#define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_STMICRO
 #define CONFIG_MXC_SPI
 #define CONFIG_SF_DEFAULT_BUS		0
@@ -192,10 +191,5 @@
 #endif
 
 #define CONFIG_IMX6_THERMAL
-
-#define CONFIG_CMD_FUSE
-#if defined(CONFIG_CMD_FUSE) || defined(CONFIG_IMX6_THERMAL)
-#define CONFIG_MXC_OCOTP
-#endif
 
 #endif				/* __CONFIG_H */
