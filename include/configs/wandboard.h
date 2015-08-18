@@ -70,18 +70,18 @@
 #define CONFIG_DOS_PARTITION
 
 /* Ethernet Configuration */
-#define CONFIG_CMD_PING
-#define CONFIG_CMD_DHCP
-#define CONFIG_CMD_MII
-#define CONFIG_CMD_NET
-#define CONFIG_FEC_MXC
-#define CONFIG_MII
-#define IMX_FEC_BASE			ENET_BASE_ADDR
-#define CONFIG_FEC_XCV_TYPE		RGMII
-#define CONFIG_ETHPRIME			"FEC"
-#define CONFIG_FEC_MXC_PHYADDR		1
-#define CONFIG_PHYLIB
-#define CONFIG_PHY_ATHEROS
+//#define CONFIG_CMD_PING
+//#define CONFIG_CMD_DHCP
+//#define CONFIG_CMD_MII
+//#define CONFIG_CMD_NET
+//#define CONFIG_FEC_MXC
+//#define CONFIG_MII
+//#define IMX_FEC_BASE			ENET_BASE_ADDR
+//#define CONFIG_FEC_XCV_TYPE		RGMII
+//#define CONFIG_ETHPRIME			"FEC"
+//#define CONFIG_FEC_MXC_PHYADDR		1
+//#define CONFIG_PHYLIB
+//#define CONFIG_PHY_ATHEROS
 
 /* Framebuffer */
 #define CONFIG_VIDEO

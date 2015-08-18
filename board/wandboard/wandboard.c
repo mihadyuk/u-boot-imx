@@ -81,6 +81,12 @@ static iomux_v3_cfg_t const usdhc3_pads[] = {
 	/*MX6_PAD_EIM_DA9__GPIO_3_9     | MUX_PAD_CTRL(NO_PAD_CTRL),*/
 };
 
+/*
+ * ethernet temporary disabled.
+ * It is not needed to use the ethernet during boot time.
+ *
+ * */
+#if 0
 static iomux_v3_cfg_t const enet_pads[] = {
 	MX6_PAD_ENET_MDIO__ENET_MDIO		| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_ENET_MDC__ENET_MDC		| MUX_PAD_CTRL(ENET_PAD_CTRL),
@@ -100,23 +106,24 @@ static iomux_v3_cfg_t const enet_pads[] = {
 	/* AR8031 PHY Reset */
 	/*MX6_PAD_EIM_D29__GPIO_3_29		| MUX_PAD_CTRL(NO_PAD_CTRL),*/
 };
+#endif
 
 static void setup_iomux_uart(void)
 {
 	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
 }
 
+#if 0
 static void setup_iomux_enet(void)
 {
 	imx_iomux_v3_setup_multiple_pads(enet_pads, ARRAY_SIZE(enet_pads));
 
 	/* Reset AR8031 PHY */
-#if 1
 	gpio_direction_output(ETH_PHY_RESET, 0);
 	udelay(500);
 	gpio_set_value(ETH_PHY_RESET, 1);
-#endif
 }
+#endif
 
 static struct fsl_esdhc_cfg usdhc_cfg[2] = {
 	{USDHC3_BASE_ADDR},
@@ -182,6 +189,7 @@ int board_mmc_init(bd_t *bis)
 	return status;
 }
 
+#if 0
 static int mx6_rgmii_rework(struct phy_device *phydev)
 {
 	unsigned short val;
@@ -204,7 +212,9 @@ static int mx6_rgmii_rework(struct phy_device *phydev)
 
 	return 0;
 }
+#endif
 
+#if 0
 int board_phy_config(struct phy_device *phydev)
 {
 	mx6_rgmii_rework(phydev);
@@ -214,6 +224,7 @@ int board_phy_config(struct phy_device *phydev)
 
 	return 0;
 }
+#endif
 
 #if defined(CONFIG_VIDEO_IPUV3)
 static struct fb_videomode const hdmi = {
@@ -261,6 +272,7 @@ static void setup_display(void)
 }
 #endif /* CONFIG_VIDEO_IPUV3 */
 
+#if 0
 int board_eth_init(bd_t *bis)
 {
 	int ret;
@@ -273,6 +285,7 @@ int board_eth_init(bd_t *bis)
 
 	return 0;
 }
+#endif
 
 int board_early_init_f(void)
 {
