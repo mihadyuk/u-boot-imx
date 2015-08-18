@@ -39,9 +39,9 @@ DECLARE_GLOBAL_DATA_PTR;
 #define ENET_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
 
-#define USDHC1_CD_GPIO		IMX_GPIO_NR(1, 2)
-#define USDHC3_CD_GPIO		IMX_GPIO_NR(3, 9)
-#define ETH_PHY_RESET		IMX_GPIO_NR(3, 29)
+#define USDHC1_CD_GPIO		IMX_GPIO_NR(1, 1)
+/*#define USDHC3_CD_GPIO		IMX_GPIO_NR(3, 9)*/
+/*#define ETH_PHY_RESET		IMX_GPIO_NR(3, 29)*/
 
 int dram_init(void)
 {
@@ -63,7 +63,7 @@ iomux_v3_cfg_t const usdhc1_pads[] = {
 	MX6_PAD_SD1_DAT2__USDHC1_DAT2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD1_DAT3__USDHC1_DAT3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	/* Carrier MicroSD Card Detect */
-	MX6_PAD_GPIO_2__GPIO_1_2      | MUX_PAD_CTRL(NO_PAD_CTRL),
+	MX6_PAD_GPIO_1__GPIO_1_1      | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
 static iomux_v3_cfg_t const usdhc3_pads[] = {
@@ -73,8 +73,12 @@ static iomux_v3_cfg_t const usdhc3_pads[] = {
 	MX6_PAD_SD3_DAT1__USDHC3_DAT1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT2__USDHC3_DAT2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT3__USDHC3_DAT3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_DAT4__USDHC3_DAT4 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_DAT5__USDHC3_DAT5 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_DAT6__USDHC3_DAT6 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_DAT7__USDHC3_DAT7 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	/* SOM MicroSD Card Detect */
-	MX6_PAD_EIM_DA9__GPIO_3_9     | MUX_PAD_CTRL(NO_PAD_CTRL),
+	/*MX6_PAD_EIM_DA9__GPIO_3_9     | MUX_PAD_CTRL(NO_PAD_CTRL),*/
 };
 
 static iomux_v3_cfg_t const enet_pads[] = {
@@ -94,7 +98,7 @@ static iomux_v3_cfg_t const enet_pads[] = {
 	MX6_PAD_RGMII_RD3__ENET_RGMII_RD3	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_RX_CTL__RGMII_RX_CTL	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	/* AR8031 PHY Reset */
-	MX6_PAD_EIM_D29__GPIO_3_29		| MUX_PAD_CTRL(NO_PAD_CTRL),
+	/*MX6_PAD_EIM_D29__GPIO_3_29		| MUX_PAD_CTRL(NO_PAD_CTRL),*/
 };
 
 static void setup_iomux_uart(void)
@@ -107,9 +111,11 @@ static void setup_iomux_enet(void)
 	imx_iomux_v3_setup_multiple_pads(enet_pads, ARRAY_SIZE(enet_pads));
 
 	/* Reset AR8031 PHY */
+#if 1
 	gpio_direction_output(ETH_PHY_RESET, 0);
 	udelay(500);
 	gpio_set_value(ETH_PHY_RESET, 1);
+#endif
 }
 
 static struct fsl_esdhc_cfg usdhc_cfg[2] = {
@@ -127,7 +133,8 @@ int board_mmc_getcd(struct mmc *mmc)
 		ret = !gpio_get_value(USDHC1_CD_GPIO);
 		break;
 	case USDHC3_BASE_ADDR:
-		ret = !gpio_get_value(USDHC3_CD_GPIO);
+		//ret = !gpio_get_value(USDHC3_CD_GPIO);
+		ret = 1;
 		break;
 	}
 
@@ -151,8 +158,9 @@ int board_mmc_init(bd_t *bis)
 			imx_iomux_v3_setup_multiple_pads(
 				usdhc3_pads, ARRAY_SIZE(usdhc3_pads));
 			usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC3_CLK);
-			usdhc_cfg[0].max_bus_width = 4;
-			gpio_direction_input(USDHC3_CD_GPIO);
+			//usdhc_cfg[0].max_bus_width = 4;
+			usdhc_cfg[0].max_bus_width = 8;
+			//gpio_direction_input(USDHC3_CD_GPIO);
 			break;
 		case 1:
 			imx_iomux_v3_setup_multiple_pads(
