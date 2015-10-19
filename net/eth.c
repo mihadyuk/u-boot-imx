@@ -107,7 +107,9 @@ static void eth_common_init(void)
 		if (cpu_eth_init(gd->bd) < 0)
 			printf("CPU Net Initialization Failed\n");
 	} else {
+#ifndef CONFIG_DM_ETH
 		printf("Net Initialization Skipped\n");
+#endif
 	}
 }
 
@@ -193,10 +195,11 @@ struct udevice *eth_get_dev_by_name(const char *devname)
 	const char *startp = NULL;
 	struct udevice *it;
 	struct uclass *uc;
+	int len = strlen("eth");
 
 	/* Must be longer than 3 to be an alias */
-	if (strlen(devname) > strlen("eth")) {
-		startp = devname + strlen("eth");
+	if (!strncmp(devname, "eth", len) && strlen(devname) > len) {
+		startp = devname + len;
 		seq = simple_strtoul(startp, &endp, 10);
 	}
 
@@ -384,6 +387,17 @@ void eth_halt(void)
 	eth_get_ops(current)->stop(current);
 	priv = current->uclass_priv;
 	priv->state = ETH_STATE_PASSIVE;
+}
+
+int eth_is_active(struct udevice *dev)
+{
+	struct eth_device_priv *priv;
+
+	if (!dev || !device_active(dev))
+		return 0;
+
+	priv = dev_get_uclass_priv(dev);
+	return priv->state == ETH_STATE_ACTIVE;
 }
 
 int eth_send(void *packet, int length)
@@ -577,7 +591,7 @@ UCLASS_DRIVER(eth) = {
 	.per_device_auto_alloc_size = sizeof(struct eth_device_priv),
 	.flags		= DM_UC_FLAG_SEQ_ALIAS,
 };
-#endif
+#endif /* #ifdef CONFIG_DM_ETH */
 
 #ifndef CONFIG_DM_ETH
 
@@ -913,6 +927,11 @@ void eth_halt(void)
 	eth_current->halt(eth_current);
 
 	eth_current->state = ETH_STATE_PASSIVE;
+}
+
+int eth_is_active(struct eth_device *dev)
+{
+	return dev && dev->state == ETH_STATE_ACTIVE;
 }
 
 int eth_send(void *packet, int length)

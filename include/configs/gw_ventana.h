@@ -57,7 +57,7 @@
 #define CONFIG_CMD_GPIO
 
 /* Thermal */
-#define CONFIG_IMX6_THERMAL
+#define CONFIG_IMX_THERMAL
 
 /* Serial */
 #define CONFIG_MXC_UART
@@ -107,6 +107,8 @@
 #define CONFIG_CMD_I2C
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MXC
+#define CONFIG_SYS_I2C_MXC_I2C1		/* enable I2C bus 1 */
+#define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
 #define CONFIG_SYS_I2C_MXC_I2C3		/* enable I2C bus 3 */
 #define CONFIG_SYS_I2C_SPEED		100000
 #define CONFIG_I2C_GSC			0
@@ -168,7 +170,6 @@
 
 /* Ethernet support */
 #define CONFIG_FEC_MXC
-#define CONFIG_E1000
 #define CONFIG_MII
 #define IMX_FEC_BASE             ENET_BASE_ADDR
 #define CONFIG_FEC_XCV_TYPE      RGMII
@@ -226,7 +227,6 @@
 #define CONFIG_IMX_VIDEO_SKIP
 
 /* Miscellaneous configurable options */
-#define CONFIG_SYS_PROMPT	             "Ventana > "
 #define CONFIG_HWCONFIG
 
 /* Print Buffer Size */

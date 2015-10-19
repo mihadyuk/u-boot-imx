@@ -15,11 +15,12 @@
 /* U-Boot Build Configuration */
 #define CONFIG_SKIP_LOWLEVEL_INIT	/* U-Boot is a 2nd stage loader */
 #define CONFIG_BOARD_EARLY_INIT_F
+#define CONFIG_DISPLAY_CPUINFO
 
 /* SoC Configuration */
 #define CONFIG_ARCH_CPU_INIT
 #define CONFIG_SYS_ARCH_TIMER
-#define CONFIG_SYS_TEXT_BASE		0x0c001000
+#define CONFIG_SYS_TEXT_BASE		0x0c000000
 #define CONFIG_SPL_TARGET		"u-boot-spi.gph"
 #define CONFIG_SYS_DCACHE_OFF
 
@@ -28,7 +29,7 @@
 #define CONFIG_SYS_LPAE_SDRAM_BASE	0x800000000
 #define CONFIG_MAX_RAM_BANK_SIZE	(2 << 30)       /* 2GB */
 #define CONFIG_STACKSIZE		(512 << 10)     /* 512 KiB */
-#define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_TEXT_BASE - \
+#define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SPL_TEXT_BASE - \
 					GENERATED_GBL_DATA_SIZE)
 
 /* SPL SPI Loader Configuration */
@@ -234,11 +235,11 @@
 	"get_kern_ubi=ubifsload ${loadaddr} ${name_kern}\0"		\
 	"get_mon_net=dhcp ${addr_mon} ${tftp_root}/${name_mon}\0"	\
 	"get_mon_ubi=ubifsload ${addr_mon} ${name_mon}\0"		\
-	"get_uboot_net=dhcp ${addr_uboot} ${tftp_root}/${name_uboot}\0"	\
+	"get_uboot_net=dhcp ${loadaddr} ${tftp_root}/${name_uboot}\0"	\
 	"burn_uboot_spi=sf probe; sf erase 0 0x100000; "		\
-		"sf write ${addr_uboot} 0 ${filesize}\0"		\
+		"sf write ${loadaddr} 0 ${filesize}\0"		\
 	"burn_uboot_nand=nand erase 0 0x100000; "			\
-		"nand write ${addr_uboot} 0 ${filesize}\0"		\
+		"nand write ${loadaddr} 0 ${filesize}\0"		\
 	"args_all=setenv bootargs console=ttyS0,115200n8 rootwait=1\0"	\
 	"args_net=setenv bootargs ${bootargs} rootfstype=nfs "		\
 		"root=/dev/nfs rw nfsroot=${serverip}:${nfs_root},"	\
@@ -254,7 +255,7 @@
 	"init_ramfs=run args_all args_ramfs get_fs_ramfs\0"		\
 	"args_ramfs=setenv bootargs ${bootargs} "			\
 		"rdinit=/sbin/init rw root=/dev/ram0 "			\
-		"initrd=0x802000000,9M\0"				\
+		"initrd=0x808080000,80M\0"				\
 	"no_post=1\0"							\
 	"mtdparts=mtdparts=davinci_nand.0:"				\
 		"1024k(bootloader)ro,512k(params)ro,-(ubifs)\0"

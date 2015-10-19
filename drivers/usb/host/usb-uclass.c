@@ -10,6 +10,7 @@
 #include <common.h>
 #include <dm.h>
 #include <errno.h>
+#include <memalign.h>
 #include <usb.h>
 #include <dm/device-internal.h>
 #include <dm/lists.h>
@@ -173,7 +174,9 @@ int usb_stop(void)
 	uclass_foreach_dev(dev, uc)
 		usb_emul_reset(dev);
 #endif
+#ifdef CONFIG_USB_STORAGE
 	usb_stor_reset();
+#endif
 	usb_hub_reset();
 	uc_priv->companion_device_count = 0;
 	usb_started = 0;

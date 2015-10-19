@@ -136,9 +136,12 @@ static void load_gdt(const u64 *boot_gdt, u16 num_entries)
 	asm volatile("lgdtl %0\n" : : "m" (gdt));
 }
 
-void setup_gdt(gd_t *id, u64 *gdt_addr)
+void arch_setup_gd(gd_t *new_gd)
 {
-	id->arch.gdt = gdt_addr;
+	u64 *gdt_addr;
+
+	gdt_addr = new_gd->arch.gdt;
+
 	/* CS: code, read/execute, 4 GB, base 0 */
 	gdt_addr[X86_GDT_ENTRY_32BIT_CS] = GDT_ENTRY(0xc09b, 0, 0xfffff);
 
@@ -146,9 +149,9 @@ void setup_gdt(gd_t *id, u64 *gdt_addr)
 	gdt_addr[X86_GDT_ENTRY_32BIT_DS] = GDT_ENTRY(0xc093, 0, 0xfffff);
 
 	/* FS: data, read/write, 4 GB, base (Global Data Pointer) */
-	id->arch.gd_addr = id;
+	new_gd->arch.gd_addr = new_gd;
 	gdt_addr[X86_GDT_ENTRY_32BIT_FS] = GDT_ENTRY(0xc093,
-		     (ulong)&id->arch.gd_addr, 0xfffff);
+		     (ulong)&new_gd->arch.gd_addr, 0xfffff);
 
 	/* 16-bit CS: code, read/execute, 64 kB, base 0 */
 	gdt_addr[X86_GDT_ENTRY_16BIT_CS] = GDT_ENTRY(0x009b, 0, 0x0ffff);
@@ -330,13 +333,15 @@ int x86_cpu_init_f(void)
 	const u32 em_rst = ~X86_CR0_EM;
 	const u32 mp_ne_set = X86_CR0_MP | X86_CR0_NE;
 
-	/* initialize FPU, reset EM, set MP and NE */
-	asm ("fninit\n" \
-	     "movl %%cr0, %%eax\n" \
-	     "andl %0, %%eax\n" \
-	     "orl  %1, %%eax\n" \
-	     "movl %%eax, %%cr0\n" \
-	     : : "i" (em_rst), "i" (mp_ne_set) : "eax");
+	if (ll_boot_init()) {
+		/* initialize FPU, reset EM, set MP and NE */
+		asm ("fninit\n" \
+		"movl %%cr0, %%eax\n" \
+		"andl %0, %%eax\n" \
+		"orl  %1, %%eax\n" \
+		"movl %%eax, %%cr0\n" \
+		: : "i" (em_rst), "i" (mp_ne_set) : "eax");
+	}
 
 	/* identify CPU via cpuid and store the decoded info into gd->arch */
 	if (has_cpuid()) {
@@ -456,7 +461,7 @@ void x86_full_reset(void)
 
 int dcache_status(void)
 {
-	return !(read_cr0() & 0x40000000);
+	return !(read_cr0() & X86_CR0_CD);
 }
 
 /* Define these functions to allow ehch-hcd to function */
@@ -712,5 +717,8 @@ __weak int x86_init_cpus(void)
 
 int cpu_init_r(void)
 {
-	return x86_init_cpus();
+	if (ll_boot_init())
+		return x86_init_cpus();
+
+	return 0;
 }

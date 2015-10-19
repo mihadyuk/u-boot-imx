@@ -104,8 +104,9 @@ modname_flags  = $(if $(filter 1,$(words $(modname))),\
 orig_c_flags   = $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) $(KBUILD_SUBDIR_CCFLAGS) \
                  $(ccflags-y) $(CFLAGS_$(basetarget).o)
 _c_flags       = $(filter-out $(CFLAGS_REMOVE_$(basetarget).o), $(orig_c_flags))
-_a_flags       = $(KBUILD_CPPFLAGS) $(KBUILD_AFLAGS) $(KBUILD_SUBDIR_ASFLAGS) \
+orig_a_flags   = $(KBUILD_CPPFLAGS) $(KBUILD_AFLAGS) $(KBUILD_SUBDIR_ASFLAGS) \
                  $(asflags-y) $(AFLAGS_$(basetarget).o)
+_a_flags       = $(filter-out $(AFLAGS_REMOVE_$(basetarget).o), $(orig_a_flags))
 _cpp_flags     = $(KBUILD_CPPFLAGS) $(cppflags-y) $(CPPFLAGS_$(@F))
 
 #
@@ -295,6 +296,17 @@ $(obj)/%.dtb: $(src)/%.dts FORCE
 	$(call if_changed_dep,dtc)
 
 dtc-tmp = $(subst $(comma),_,$(dot-target).dts.tmp)
+
+# ACPI
+# ---------------------------------------------------------------------------
+quiet_cmd_acpi_c_asl= ASL     $@
+cmd_acpi_c_asl=         \
+	$(CPP) -x assembler-with-cpp -P -o $<.tmp $<; \
+	iasl -p $< -tc -va $<.tmp; \
+	mv $(patsubst %.asl,%.hex,$<) $@
+
+$(obj)/%.c:    $(src)/%.asl
+	$(call cmd,acpi_c_asl)
 
 # Bzip2
 # ---------------------------------------------------------------------------

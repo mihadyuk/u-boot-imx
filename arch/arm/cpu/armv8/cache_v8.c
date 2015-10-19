@@ -12,13 +12,22 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifndef CONFIG_SYS_DCACHE_OFF
-void set_pgtable_section(u64 *page_table, u64 index, u64 section,
-			 u64 memory_type)
+inline void set_pgtable_section(u64 *page_table, u64 index, u64 section,
+			 u64 memory_type, u64 share)
 {
 	u64 value;
 
 	value = section | PMD_TYPE_SECT | PMD_SECT_AF;
 	value |= PMD_ATTRINDX(memory_type);
+	value |= share;
+	page_table[index] = value;
+}
+
+inline void set_pgtable_table(u64 *page_table, u64 index, u64 *table_addr)
+{
+	u64 value;
+
+	value = (u64)table_addr | PMD_TYPE_TABLE;
 	page_table[index] = value;
 }
 
@@ -32,7 +41,7 @@ static void mmu_setup(void)
 	/* Setup an identity-mapping for all spaces */
 	for (i = 0; i < (PGTABLE_SIZE >> 3); i++) {
 		set_pgtable_section(page_table, i, i << SECTION_SHIFT,
-				    MT_DEVICE_NGNRNE);
+				    MT_DEVICE_NGNRNE, PMD_SECT_NON_SHARE);
 	}
 
 	/* Setup an identity-mapping for all RAM space */
@@ -42,7 +51,7 @@ static void mmu_setup(void)
 		for (j = start >> SECTION_SHIFT;
 		     j < end >> SECTION_SHIFT; j++) {
 			set_pgtable_section(page_table, j, j << SECTION_SHIFT,
-					    MT_NORMAL);
+					    MT_NORMAL, PMD_SECT_NON_SHARE);
 		}
 	}
 
@@ -180,14 +189,6 @@ void flush_dcache_all(void)
 {
 }
 
-void invalidate_dcache_range(unsigned long start, unsigned long stop)
-{
-}
-
-void flush_dcache_range(unsigned long start, unsigned long stop)
-{
-}
-
 void dcache_enable(void)
 {
 }
@@ -260,12 +261,4 @@ void __weak enable_caches(void)
 {
 	icache_enable();
 	dcache_enable();
-}
-
-/*
- * Flush range from all levels of d-cache/unified-cache
- */
-void flush_cache(unsigned long start, unsigned long size)
-{
-	flush_dcache_range(start, start + size);
 }

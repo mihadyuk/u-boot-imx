@@ -11,6 +11,9 @@
 #ifndef _PCI_H
 #define _PCI_H
 
+#define PCI_CFG_SPACE_SIZE	256
+#define PCI_CFG_SPACE_EXP_SIZE	4096
+
 /*
  * Under PCI, each device has 256 bytes of configuration address space,
  * of which the first 64 bytes are standardized as follows:
@@ -228,6 +231,8 @@
 #define PCI_MIN_GNT		0x3e	/* 8 bits */
 #define PCI_MAX_LAT		0x3f	/* 8 bits */
 
+#define PCI_INTERRUPT_LINE_DISABLE	0xff
+
 /* Header type 1 (PCI-to-PCI bridges) */
 #define PCI_PRIMARY_BUS		0x18	/* Primary bus number */
 #define PCI_SECONDARY_BUS	0x19	/* Secondary bus number */
@@ -412,6 +417,39 @@
 
 #define PCI_FIND_CAP_TTL 0x48
 #define CAP_START_POS 0x40
+
+/* Extended Capabilities (PCI-X 2.0 and Express) */
+#define PCI_EXT_CAP_ID(header)		(header & 0x0000ffff)
+#define PCI_EXT_CAP_VER(header)		((header >> 16) & 0xf)
+#define PCI_EXT_CAP_NEXT(header)	((header >> 20) & 0xffc)
+
+#define PCI_EXT_CAP_ID_ERR	0x01	/* Advanced Error Reporting */
+#define PCI_EXT_CAP_ID_VC	0x02	/* Virtual Channel Capability */
+#define PCI_EXT_CAP_ID_DSN	0x03	/* Device Serial Number */
+#define PCI_EXT_CAP_ID_PWR	0x04	/* Power Budgeting */
+#define PCI_EXT_CAP_ID_RCLD	0x05	/* Root Complex Link Declaration */
+#define PCI_EXT_CAP_ID_RCILC	0x06	/* Root Complex Internal Link Control */
+#define PCI_EXT_CAP_ID_RCEC	0x07	/* Root Complex Event Collector */
+#define PCI_EXT_CAP_ID_MFVC	0x08	/* Multi-Function VC Capability */
+#define PCI_EXT_CAP_ID_VC9	0x09	/* same as _VC */
+#define PCI_EXT_CAP_ID_RCRB	0x0A	/* Root Complex RB? */
+#define PCI_EXT_CAP_ID_VNDR	0x0B	/* Vendor-Specific */
+#define PCI_EXT_CAP_ID_CAC	0x0C	/* Config Access - obsolete */
+#define PCI_EXT_CAP_ID_ACS	0x0D	/* Access Control Services */
+#define PCI_EXT_CAP_ID_ARI	0x0E	/* Alternate Routing ID */
+#define PCI_EXT_CAP_ID_ATS	0x0F	/* Address Translation Services */
+#define PCI_EXT_CAP_ID_SRIOV	0x10	/* Single Root I/O Virtualization */
+#define PCI_EXT_CAP_ID_MRIOV	0x11	/* Multi Root I/O Virtualization */
+#define PCI_EXT_CAP_ID_MCAST	0x12	/* Multicast */
+#define PCI_EXT_CAP_ID_PRI	0x13	/* Page Request Interface */
+#define PCI_EXT_CAP_ID_AMD_XXX	0x14	/* Reserved for AMD */
+#define PCI_EXT_CAP_ID_REBAR	0x15	/* Resizable BAR */
+#define PCI_EXT_CAP_ID_DPA	0x16	/* Dynamic Power Allocation */
+#define PCI_EXT_CAP_ID_TPH	0x17	/* TPH Requester */
+#define PCI_EXT_CAP_ID_LTR	0x18	/* Latency Tolerance Reporting */
+#define PCI_EXT_CAP_ID_SECPCI	0x19	/* Secondary PCIe Capability */
+#define PCI_EXT_CAP_ID_PMUX	0x1A	/* Protocol Multiplexing */
+#define PCI_EXT_CAP_ID_PASID	0x1B	/* Process Address Space ID */
 
 /* Include the ID list */
 
@@ -615,6 +653,7 @@ extern pci_addr_t pci_hose_phys_to_bus(struct pci_controller* hose,
 #define pci_io_to_virt(dev, addr, len, map_flags) \
 	pci_bus_to_virt((dev), (addr), PCI_REGION_IO, (len), (map_flags))
 
+/* For driver model these are defined in macros in pci_compat.c */
 extern int pci_hose_read_config_byte(struct pci_controller *hose,
 				     pci_dev_t dev, int where, u8 *val);
 extern int pci_hose_read_config_word(struct pci_controller *hose,
@@ -686,6 +725,11 @@ extern int pci_hose_find_cap_start(struct pci_controller *hose, pci_dev_t dev,
 				   u8 hdr_type);
 extern int pci_find_cap(struct pci_controller *hose, pci_dev_t dev, int pos,
 			int cap);
+
+int pci_find_next_ext_capability(struct pci_controller *hose,
+				 pci_dev_t dev, int start, int cap);
+int pci_hose_find_ext_capability(struct pci_controller *hose,
+				 pci_dev_t dev, int cap);
 
 #ifdef CONFIG_PCI_FIXUP_DEV
 extern void board_pci_fixup_dev(struct pci_controller *hose, pci_dev_t dev,
@@ -867,6 +911,31 @@ int pci_bus_find_devfn(struct udevice *bus, pci_dev_t find_devfn,
 		       struct udevice **devp);
 
 /**
+ * pci_find_first_device() - return the first available PCI device
+ *
+ * This function and pci_find_first_device() allow iteration through all
+ * available PCI devices on all buses. Assuming there are any, this will
+ * return the first one.
+ *
+ * @devp:	Set to the first available device, or NULL if no more are left
+ *		or we got an error
+ * @return 0 if all is OK, -ve on error (e.g. a bus/bridge failed to probe)
+ */
+int pci_find_first_device(struct udevice **devp);
+
+/**
+ * pci_find_next_device() - return the next available PCI device
+ *
+ * Finds the next available PCI device after the one supplied, or sets @devp
+ * to NULL if there are no more.
+ *
+ * @devp:	On entry, the last device returned. Set to the next available
+ *		device, or NULL if no more are left or we got an error
+ * @return 0 if all is OK, -ve on error (e.g. a bus/bridge failed to probe)
+ */
+int pci_find_next_device(struct udevice **devp);
+
+/**
  * pci_get_ff() - Returns a mask for the given access size
  *
  * @size:	Access size
@@ -944,6 +1013,24 @@ int pci_bus_read_config(struct udevice *bus, pci_dev_t bdf, int offset,
  */
 int pci_bus_write_config(struct udevice *bus, pci_dev_t bdf, int offset,
 			 unsigned long value, enum pci_size_t size);
+
+/**
+ * Driver model PCI config access functions. Use these in preference to others
+ * when you have a valid device
+ */
+int dm_pci_read_config(struct udevice *dev, int offset, unsigned long *valuep,
+		       enum pci_size_t size);
+
+int dm_pci_read_config8(struct udevice *dev, int offset, u8 *valuep);
+int dm_pci_read_config16(struct udevice *dev, int offset, u16 *valuep);
+int dm_pci_read_config32(struct udevice *dev, int offset, u32 *valuep);
+
+int dm_pci_write_config(struct udevice *dev, int offset, unsigned long value,
+			enum pci_size_t size);
+
+int dm_pci_write_config8(struct udevice *dev, int offset, u8 value);
+int dm_pci_write_config16(struct udevice *dev, int offset, u16 value);
+int dm_pci_write_config32(struct udevice *dev, int offset, u32 value);
 
 /*
  * The following functions provide access to the above without needing the

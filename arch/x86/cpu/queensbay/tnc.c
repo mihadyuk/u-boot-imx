@@ -36,8 +36,6 @@ int arch_cpu_init(void)
 	if (ret)
 		return ret;
 
-	unprotect_spi_flash();
-
 	return 0;
 }
 
@@ -80,7 +78,7 @@ void cpu_irq_init(void)
 
 int arch_misc_init(void)
 {
-	pirq_init();
+	unprotect_spi_flash();
 
-	return 0;
+	return pirq_init();
 }

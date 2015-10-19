@@ -389,6 +389,8 @@ unsigned long get_board_ddr_clk(void);
 #define CONFIG_CMD_I2C
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MXC
+#define CONFIG_SYS_I2C_MXC_I2C1		/* enable I2C bus 1 */
+#define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
 #define CONFIG_SYS_I2C_MXC_I2C3		/* enable I2C bus 3 */
 
 /*
@@ -547,7 +549,6 @@ unsigned long get_board_ddr_clk(void);
 
 #ifdef CONFIG_PCI
 #define CONFIG_PCI_PNP
-#define CONFIG_E1000
 #define CONFIG_PCI_SCAN_SHOW
 #define CONFIG_CMD_PCI
 #endif
@@ -565,10 +566,11 @@ unsigned long get_board_ddr_clk(void);
 #define CONFIG_LS102XA_NS_ACCESS
 #define CONFIG_SMP_PEN_ADDR		0x01ee0200
 #define CONFIG_TIMER_CLK_FREQ		12500000
-#define CONFIG_ARMV7_SECURE_BASE	OCRAM_BASE_S_ADDR
 
 #define CONFIG_HWCONFIG
-#define HWCONFIG_BUFFER_SIZE		128
+#define HWCONFIG_BUFFER_SIZE		256
+
+#define CONFIG_FSL_DEVICE_DISABLE
 
 #define CONFIG_BOOTDELAY		3
 

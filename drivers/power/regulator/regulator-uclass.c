@@ -256,7 +256,9 @@ static int regulator_post_bind(struct udevice *dev)
 	if (!uc_pdata->name) {
 		debug("%s: dev: %s has no property 'regulator-name'\n",
 		      __func__, dev->name);
-		return -EINVAL;
+		uc_pdata->name = fdt_get_name(blob, offset, NULL);
+		if (!uc_pdata->name)
+			return -EINVAL;
 	}
 
 	if (regulator_name_is_unique(dev, uc_pdata->name))
@@ -319,8 +321,10 @@ int regulators_enable_boot_on(bool verbose)
 	     dev && !ret;
 	     uclass_next_device(&dev)) {
 		ret = regulator_autoset(dev);
-		if (ret == -EMEDIUMTYPE)
+		if (ret == -EMEDIUMTYPE) {
+			ret = 0;
 			continue;
+		}
 		if (verbose)
 			regulator_show(dev, ret);
 	}

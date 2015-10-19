@@ -45,7 +45,6 @@
 #define CONFIG_SYS_BAUDRATE_TABLE	{9600, 19200, 38400, 57600, 115200}
 
 /* Shell */
-#define CONFIG_SYS_PROMPT	"CM-FX6 # "
 #define CONFIG_SYS_PBSIZE	(CONFIG_SYS_CBSIZE + \
 					sizeof(CONFIG_SYS_PROMPT) + 16)
 
@@ -199,6 +198,8 @@
 /* I2C */
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MXC
+#define CONFIG_SYS_I2C_MXC_I2C1		/* enable I2C bus 1 */
+#define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
 #define CONFIG_SYS_I2C_MXC_I2C3		/* enable I2C bus 3 */
 #define CONFIG_SYS_I2C_SPEED		100000
 #define CONFIG_SYS_MXC_I2C3_SPEED	400000
@@ -225,6 +226,7 @@
 #define CONFIG_SYS_MALLOC_LEN			(10 * 1024 * 1024)
 #define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	800 /* 400 KB */
 #define CONFIG_OF_BOARD_SETUP
+#define CONFIG_MISC_INIT_R
 
 /* SPL */
 #include "imx6_spl.h"

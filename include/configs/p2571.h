@@ -10,19 +10,14 @@
 
 #include <linux/sizes.h>
 
-/* enable PMIC */
-#define CONFIG_MAX77620_POWER
-
 #include "tegra210-common.h"
 
 /* High-level configuration options */
-#define V_PROMPT			"Tegra210 (P2571) # "
 #define CONFIG_TEGRA_BOARD_STRING	"NVIDIA P2571"
 
 /* Board-specific serial config */
 #define CONFIG_SERIAL_MULTI
 #define CONFIG_TEGRA_ENABLE_UARTA
-#define CONFIG_SYS_NS16550_COM1		NV_PA_APB_UARTA_BASE
 
 /* I2C */
 #define CONFIG_SYS_I2C_TEGRA
@@ -41,8 +36,6 @@
 #define CONFIG_ENV_OFFSET		(-CONFIG_ENV_SIZE)
 
 /* SPI */
-#define CONFIG_TEGRA114_SPI		/* Compatible w/ Tegra114 SPI */
-#define CONFIG_TEGRA114_SPI_CTRLS	6
 #define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_SF_DEFAULT_MODE		SPI_MODE_0
 #define CONFIG_SF_DEFAULT_SPEED		24000000
@@ -53,7 +46,7 @@
 /* USB2.0 Host support */
 #define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_TEGRA
-#define CONFIG_USB_MAX_CONTROLLER_COUNT	2
+#define CONFIG_USB_MAX_CONTROLLER_COUNT	1
 #define CONFIG_USB_STORAGE
 #define CONFIG_CMD_USB
 
@@ -64,12 +57,9 @@
 /* General networking support */
 #define CONFIG_CMD_DHCP
 
-/*
- * TODO(twarren@nvidia.com) - add tegra-common-usb-gadget.h back
- * breaks 64-bit build in ci_udc.c
- */
+#include "tegra-common-usb-gadget.h"
 #include "tegra-common-post.h"
 
-#define COUNTER_FREQUENCY	38400000
+#define CONFIG_OF_BOARD_SETUP
 
 #endif /* _P2571_H */

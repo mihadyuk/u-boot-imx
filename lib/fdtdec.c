@@ -58,14 +58,9 @@ static const char * const compat_names[COMPAT_COUNT] = {
 	COMPAT(MAXIM_MAX77686_PMIC, "maxim,max77686"),
 	COMPAT(GENERIC_SPI_FLASH, "spi-flash"),
 	COMPAT(MAXIM_98095_CODEC, "maxim,max98095-codec"),
-	COMPAT(INFINEON_SLB9635_TPM, "infineon,slb9635-tpm"),
-	COMPAT(INFINEON_SLB9645_TPM, "infineon,slb9645tt"),
 	COMPAT(SAMSUNG_EXYNOS5_I2C, "samsung,exynos5-hsi2c"),
 	COMPAT(SANDBOX_LCD_SDL, "sandbox,lcd-sdl"),
-	COMPAT(TI_TPS65090, "ti,tps65090"),
-	COMPAT(COMPAT_NXP_PTN3460, "nxp,ptn3460"),
 	COMPAT(SAMSUNG_EXYNOS_SYSMMU, "samsung,sysmmu-v3.3"),
-	COMPAT(PARADE_PS8625, "parade,ps8625"),
 	COMPAT(INTEL_MICROCODE, "intel,microcode"),
 	COMPAT(MEMORY_SPD, "memory-spd"),
 	COMPAT(INTEL_PANTHERPOINT_AHCI, "intel,pantherpoint-ahci"),
@@ -78,6 +73,10 @@ static const char * const compat_names[COMPAT_COUNT] = {
 	COMPAT(SOCIONEXT_XHCI, "socionext,uniphier-xhci"),
 	COMPAT(COMPAT_INTEL_PCH, "intel,bd82x6x"),
 	COMPAT(COMPAT_INTEL_IRQ_ROUTER, "intel,irq-router"),
+	COMPAT(ALTERA_SOCFPGA_DWMAC, "altr,socfpga-stmmac"),
+	COMPAT(ALTERA_SOCFPGA_DWMMC, "altr,socfpga-dw-mshc"),
+	COMPAT(COMPAT_INTEL_BAYTRAIL_FSP, "intel,baytrail-fsp"),
+	COMPAT(COMPAT_INTEL_BAYTRAIL_FSP_MDP, "intel,baytrail-fsp-mdp"),
 };
 
 const char *fdtdec_get_compatible(enum fdt_compat_id id)
@@ -87,14 +86,86 @@ const char *fdtdec_get_compatible(enum fdt_compat_id id)
 	return compat_names[id];
 }
 
-fdt_addr_t fdtdec_get_addr_size(const void *blob, int node,
-		const char *prop_name, fdt_size_t *sizep)
+fdt_addr_t fdtdec_get_addr_size_fixed(const void *blob, int node,
+		const char *prop_name, int index, int na, int ns,
+		fdt_size_t *sizep)
 {
-	const fdt32_t *ptr, *end;
-	int parent, na, ns, len;
+	const fdt32_t *prop, *prop_end;
+	const fdt32_t *prop_addr, *prop_size, *prop_after_size;
+	int len;
 	fdt_addr_t addr;
 
 	debug("%s: %s: ", __func__, prop_name);
+
+	if (na > (sizeof(fdt_addr_t) / sizeof(fdt32_t))) {
+		debug("(na too large for fdt_addr_t type)\n");
+		return FDT_ADDR_T_NONE;
+	}
+
+	if (ns > (sizeof(fdt_size_t) / sizeof(fdt32_t))) {
+		debug("(ns too large for fdt_size_t type)\n");
+		return FDT_ADDR_T_NONE;
+	}
+
+	prop = fdt_getprop(blob, node, prop_name, &len);
+	if (!prop) {
+		debug("(not found)\n");
+		return FDT_ADDR_T_NONE;
+	}
+	prop_end = prop + (len / sizeof(*prop));
+
+	prop_addr = prop + (index * (na + ns));
+	prop_size = prop_addr + na;
+	prop_after_size = prop_size + ns;
+	if (prop_after_size > prop_end) {
+		debug("(not enough data: expected >= %d cells, got %d cells)\n",
+		      (u32)(prop_after_size - prop), ((u32)(prop_end - prop)));
+		return FDT_ADDR_T_NONE;
+	}
+
+	addr = fdtdec_get_number(prop_addr, na);
+
+	if (sizep) {
+		*sizep = fdtdec_get_number(prop_size, ns);
+		debug("addr=%08llx, size=%llx\n", (u64)addr, (u64)*sizep);
+	} else {
+		debug("addr=%08llx\n", (u64)addr);
+	}
+
+	return addr;
+}
+
+fdt_addr_t fdtdec_get_addr_size_auto_parent(const void *blob, int parent,
+		int node, const char *prop_name, int index, fdt_size_t *sizep)
+{
+	int na, ns;
+
+	debug("%s: ", __func__);
+
+	na = fdt_address_cells(blob, parent);
+	if (na < 1) {
+		debug("(bad #address-cells)\n");
+		return FDT_ADDR_T_NONE;
+	}
+
+	ns = fdt_size_cells(blob, parent);
+	if (ns < 0) {
+		debug("(bad #size-cells)\n");
+		return FDT_ADDR_T_NONE;
+	}
+
+	debug("na=%d, ns=%d, ", na, ns);
+
+	return fdtdec_get_addr_size_fixed(blob, node, prop_name, index, na,
+					  ns, sizep);
+}
+
+fdt_addr_t fdtdec_get_addr_size_auto_noparent(const void *blob, int node,
+		const char *prop_name, int index, fdt_size_t *sizep)
+{
+	int parent;
+
+	debug("%s: ", __func__);
 
 	parent = fdt_parent_offset(blob, node);
 	if (parent < 0) {
@@ -102,33 +173,18 @@ fdt_addr_t fdtdec_get_addr_size(const void *blob, int node,
 		return FDT_ADDR_T_NONE;
 	}
 
-	na = fdt_address_cells(blob, parent);
-	ns = fdt_size_cells(blob, parent);
+	return fdtdec_get_addr_size_auto_parent(blob, parent, node, prop_name,
+						index, sizep);
+}
 
-	ptr = fdt_getprop(blob, node, prop_name, &len);
-	if (!ptr) {
-		debug("(not found)\n");
-		return FDT_ADDR_T_NONE;
-	}
+fdt_addr_t fdtdec_get_addr_size(const void *blob, int node,
+		const char *prop_name, fdt_size_t *sizep)
+{
+	int ns = sizep ? (sizeof(fdt_size_t) / sizeof(fdt32_t)) : 0;
 
-	end = ptr + len / sizeof(*ptr);
-
-	if (ptr + na + ns > end) {
-		debug("(not enough data: expected %d bytes, got %d bytes)\n",
-		      (na + ns) * 4, len);
-		return FDT_ADDR_T_NONE;
-	}
-
-	addr = fdtdec_get_number(ptr, na);
-
-	if (sizep) {
-		*sizep = fdtdec_get_number(ptr + na, ns);
-		debug("addr=%pa, size=%pa\n", &addr, sizep);
-	} else {
-		debug("%pa\n", &addr);
-	}
-
-	return addr;
+	return fdtdec_get_addr_size_fixed(blob, node, prop_name, 0,
+					  sizeof(fdt_addr_t) / sizeof(fdt32_t),
+					  ns, sizep);
 }
 
 fdt_addr_t fdtdec_get_addr(const void *blob, int node,
@@ -223,9 +279,8 @@ int fdtdec_get_pci_vendev(const void *blob, int node, u16 *vendor, u16 *device)
 
 				return 0;
 			}
-		} else {
-			list += (len + 1);
 		}
+		list += (len + 1);
 	}
 
 	return -ENOENT;
@@ -1156,7 +1211,7 @@ int fdtdec_decode_display_timing(const void *blob, int parent, int index,
 
 int fdtdec_setup(void)
 {
-#ifdef CONFIG_OF_CONTROL
+#if CONFIG_IS_ENABLED(OF_CONTROL)
 # ifdef CONFIG_OF_EMBED
 	/* Get a pointer to the FDT */
 	gd->fdt_blob = __dtb_dt_begin;
@@ -1167,7 +1222,7 @@ int fdtdec_setup(void)
 #  else
 	/* FDT is at end of image */
 	gd->fdt_blob = (ulong *)&_end;
-#endif
+#  endif
 # elif defined(CONFIG_OF_HOSTFILE)
 	if (sandbox_read_fdt_from_file()) {
 		puts("Failed to read control FDT\n");

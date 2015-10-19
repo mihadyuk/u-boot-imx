@@ -235,7 +235,6 @@
 #define CONFIG_SYS_LOAD_ADDR		0 /* default? */
 
 /* Miscellaneous configurable options */
-#define CONFIG_SYS_PROMPT		"zynq-uboot> "
 #define CONFIG_SYS_HUSH_PARSER
 
 #define CONFIG_CMDLINE_EDITING
@@ -320,7 +319,7 @@
 #define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION     1
 #define CONFIG_SPL_LIBDISK_SUPPORT
 #define CONFIG_SPL_FAT_SUPPORT
-#define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME     "u-boot-dtb.img"
+#define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME     "u-boot.img"
 #endif
 
 /* Disable dcache for SPL just for sure */

@@ -488,12 +488,6 @@ copy_file (int ifd, const char *datafile, int pad)
 	int size;
 	struct image_type_params *tparams = imagetool_get_type(params.type);
 
-	if (pad >= sizeof(zeros)) {
-		fprintf(stderr, "%s: Can't pad to %d\n",
-			params.cmdname, pad);
-		exit(EXIT_FAILURE);
-	}
-
 	memset(zeros, 0, sizeof(zeros));
 
 	if (params.vflag) {
@@ -563,11 +557,18 @@ copy_file (int ifd, const char *datafile, int pad)
 			exit (EXIT_FAILURE);
 		}
 	} else if (pad > 1) {
-		if (write(ifd, (char *)&zeros, pad) != pad) {
-			fprintf(stderr, "%s: Write error on %s: %s\n",
-				params.cmdname, params.imagefile,
-				strerror(errno));
-			exit(EXIT_FAILURE);
+		while (pad > 0) {
+			int todo = sizeof(zeros);
+
+			if (todo > pad)
+				todo = pad;
+			if (write(ifd, (char *)&zeros, todo) != todo) {
+				fprintf(stderr, "%s: Write error on %s: %s\n",
+					params.cmdname, params.imagefile,
+					strerror(errno));
+				exit(EXIT_FAILURE);
+			}
+			pad -= todo;
 		}
 	}
 
@@ -594,7 +595,7 @@ static void usage(void)
 		params.cmdname);
 	fprintf(stderr, "       %s [-D dtc_options] [-f fit-image.its|-F] fit-image\n",
 		params.cmdname);
-	fprintf(stderr, "          -D => set options for device tree compiler\n"
+	fprintf(stderr, "          -D => set all options for device tree compiler\n"
 			"          -f => input filename for FIT source\n");
 #ifdef CONFIG_FIT_SIGNATURE
 	fprintf(stderr, "Signing / verified boot options: [-k keydir] [-K dtb] [ -c <comment>] [-r]\n"

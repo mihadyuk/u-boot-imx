@@ -17,7 +17,6 @@
 #define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_ARCH_MISC_INIT
 
-#define CONFIG_X86_SERIAL
 #define CONFIG_SMSC_LPC47M
 
 #define CONFIG_PCI_MEM_BUS		0x40000000
@@ -32,10 +31,8 @@
 #define CONFIG_PCI_IO_PHYS		CONFIG_PCI_IO_BUS
 #define CONFIG_PCI_IO_SIZE		0xe000
 
-#define CONFIG_PCI_CONFIG_HOST_BRIDGE
 #define CONFIG_SYS_EARLY_PCI_INIT
 #define CONFIG_PCI_PNP
-#define CONFIG_E1000
 
 #define CONFIG_STD_DEVICES_SETTINGS	"stdin=serial,vga,usbkbd\0" \
 					"stdout=serial,vga\0" \
@@ -51,13 +48,6 @@
 #define CONFIG_GENERIC_MMC
 #define CONFIG_MMC_SDMA
 #define CONFIG_CMD_MMC
-
-/* Topcliff Gigabit Ethernet */
-#define CONFIG_PCH_GBE
-#define CONFIG_PHYLIB
-
-/* TunnelCreek IGD support */
-#define CONFIG_VGA_AS_SINGLE_DEVICE
 
 /* Environment configuration */
 #define CONFIG_ENV_SECT_SIZE		0x1000

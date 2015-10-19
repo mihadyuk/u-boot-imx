@@ -245,8 +245,11 @@ struct lmb;
 #define IH_TYPE_X86_SETUP	20	/* x86 setup.bin Image		*/
 #define IH_TYPE_LPC32XXIMAGE	21	/* x86 setup.bin Image		*/
 #define IH_TYPE_LOADABLE	22	/* A list of typeless images	*/
+#define IH_TYPE_RKIMAGE		23	/* Rockchip Boot Image		*/
+#define IH_TYPE_RKSD		24	/* Rockchip SD card		*/
+#define IH_TYPE_RKSPI		25	/* Rockchip SPI image		*/
 
-#define IH_TYPE_COUNT		23	/* Number of image types */
+#define IH_TYPE_COUNT		26	/* Number of image types */
 
 /*
  * Compression Types
@@ -256,6 +259,7 @@ struct lmb;
 #define IH_COMP_BZIP2		2	/* bzip2 Compression Used	*/
 #define IH_COMP_LZMA		3	/* lzma  Compression Used	*/
 #define IH_COMP_LZO		4	/* lzo   Compression Used	*/
+#define IH_COMP_LZ4		5	/* lz4   Compression Used	*/
 
 #define IH_MAGIC	0x27051956	/* Image Magic Number		*/
 #define IH_NMLEN		32	/* Image Name Length		*/

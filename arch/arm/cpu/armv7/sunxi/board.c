@@ -21,8 +21,10 @@
 #include <asm/io.h>
 #include <asm/arch/clock.h>
 #include <asm/arch/gpio.h>
+#include <asm/arch/spl.h>
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/timer.h>
+#include <asm/arch/tzpc.h>
 #include <asm/arch/mmc.h>
 
 #include <linux/compiler.h>
@@ -115,6 +117,10 @@ void s_init(void)
 		"orr r0, r0, #1 << 6\n"
 		"mcr p15, 0, r0, c1, c0, 1\n");
 #endif
+#if defined CONFIG_MACH_SUN6I
+	/* Enable non-secure access to the RTC */
+	tzpc_init();
+#endif
 
 	clock_init();
 	timer_init();
@@ -147,7 +153,7 @@ u32 spl_boot_device(void)
 	 * binary over USB. If it is found, it determines where SPL was
 	 * read from.
 	 */
-	if (readl(4) != 0x4E4F4765 || readl(8) != 0x3054422E) /* eGON.BT0 */
+	if (!is_boot0_magic(SPL_ADDR + 4)) /* eGON.BT0 */
 		return BOOT_DEVICE_BOARD;
 
 	/* The BROM will try to boot from mmc0 first, so try that first. */
@@ -193,11 +199,6 @@ void board_init_f(ulong dummy)
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 #endif
 	sunxi_board_init();
-
-	/* Clear the BSS. */
-	memset(__bss_start, 0, __bss_end - __bss_start);
-
-	board_init_r(NULL, 0);
 }
 #endif
 

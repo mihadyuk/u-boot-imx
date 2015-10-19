@@ -42,6 +42,7 @@ enum clock_type_id {
 	CLOCK_TYPE_ASPTE,
 	CLOCK_TYPE_PMDACD2T,
 	CLOCK_TYPE_PCST,
+	CLOCK_TYPE_DP,
 
 	CLOCK_TYPE_PC2CC3M,
 	CLOCK_TYPE_PC2CC3S_T,
@@ -100,6 +101,10 @@ static enum clock_id clock_source[CLOCK_TYPE_COUNT][CLOCK_MAX_MUX+1] = {
 		CLK(CGENERAL),	CLK(DISPLAY2),	CLK(OSC),	CLK(NONE),
 		MASK_BITS_31_29},
 	{ CLK(PERIPH),	CLK(CGENERAL),	CLK(SFROM32KHZ),	CLK(OSC),
+		CLK(NONE),	CLK(NONE),	CLK(NONE),	CLK(NONE),
+		MASK_BITS_31_28},
+	/* CLOCK_TYPE_DP */
+	{ CLK(NONE),	CLK(NONE),	CLK(NONE),	CLK(NONE),
 		CLK(NONE),	CLK(NONE),	CLK(NONE),	CLK(NONE),
 		MASK_BITS_31_28},
 
@@ -631,6 +636,36 @@ static s8 periph_id_to_internal_id[PERIPH_ID_COUNT] = {
 };
 
 /*
+ * PLL divider shift/mask tables for all PLL IDs.
+ */
+struct clk_pll_info tegra_pll_info_table[CLOCK_ID_PLL_COUNT] = {
+	/*
+	 * NOTE: If kcp_mask/kvco_mask == 0, they're not used in that PLL (PLLC, etc.)
+	 *       If lock_ena or lock_det are >31, they're not used in that PLL (PLLC, etc.)
+	 */
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 10, .n_mask = 0xFF, .p_shift = 20, .p_mask = 0x1F,
+	  .lock_ena = 32,  .lock_det = 27, .kcp_shift = 0, .kcp_mask = 0, .kvco_shift = 0, .kvco_mask = 0 },	/* PLLC */
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 8,  .n_mask = 0xFF, .p_shift = 20, .p_mask = 0x1F,
+	  .lock_ena = 4,  .lock_det = 27, .kcp_shift = 1, .kcp_mask = 3, .kvco_shift = 0, .kvco_mask = 1 },	/* PLLM */
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 10, .n_mask = 0xFF, .p_shift = 20, .p_mask = 0x1F,
+	  .lock_ena = 18, .lock_det = 27, .kcp_shift = 0, .kcp_mask = 3, .kvco_shift = 2, .kvco_mask = 1 },	/* PLLP */
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 8,  .n_mask = 0xFF, .p_shift = 20, .p_mask = 0x1F,
+	  .lock_ena = 28, .lock_det = 27, .kcp_shift = 25, .kcp_mask = 3, .kvco_shift = 24, .kvco_mask = 1 },	/* PLLA */
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 8,  .n_mask = 0xFF, .p_shift = 16, .p_mask = 0x1F,
+	  .lock_ena = 29, .lock_det = 27, .kcp_shift = 25, .kcp_mask = 3, .kvco_shift = 24, .kvco_mask = 1 },	/* PLLU */
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 11, .n_mask = 0xFF, .p_shift = 20, .p_mask = 0x07,
+	  .lock_ena = 18, .lock_det = 27, .kcp_shift = 23, .kcp_mask = 3, .kvco_shift = 22, .kvco_mask = 1 },	/* PLLD */
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 8,  .n_mask = 0xFF, .p_shift = 20, .p_mask = 0x1F,
+	  .lock_ena = 18, .lock_det = 27, .kcp_shift = 1, .kcp_mask = 3, .kvco_shift = 0, .kvco_mask = 1 },	/* PLLX */
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 8,  .n_mask = 0xFF, .p_shift = 0,  .p_mask = 0,
+	  .lock_ena = 9,  .lock_det = 11, .kcp_shift = 6, .kcp_mask = 3, .kvco_shift = 0, .kvco_mask = 1 },	/* PLLE */
+	{ .m_shift = 0, .m_mask = 0, .n_shift = 0, .n_mask = 0, .p_shift = 0, .p_mask = 0,
+	  .lock_ena = 0, .lock_det = 0, .kcp_shift = 0, .kcp_mask = 0, .kvco_shift = 0, .kvco_mask = 0 },	/* PLLS (gone)*/
+	{ .m_shift = 0, .m_mask = 0xFF, .n_shift = 8, .n_mask = 0xFF,  .p_shift = 19,  .p_mask = 0x1F,
+	  .lock_ena = 30, .lock_det = 27, .kcp_shift = 25, .kcp_mask = 3, .kvco_shift = 24, .kvco_mask = 1 },	/* PLLDP */
+};
+
+/*
  * Get the oscillator frequency, from the corresponding hardware configuration
  * field. Note that Tegra30+ support 3 new higher freqs, but we map back
  * to the old T20 freqs. Support for the higher oscillators is TBD.
@@ -649,8 +684,8 @@ enum clock_osc_freq clock_get_osc_freq(void)
 	 */
 	if (reg == 5) {
 		debug("OSC_FREQ is 38.4MHz (%d) ...\n", reg);
-		/* Map it to 19.2MHz for now. 38.4MHz OSC support TBD */
-		return 1;
+		/* Map it to the 5th CLOCK_OSC_ enum, i.e. 4 */
+		return 4;
 	}
 
 	/*
@@ -903,6 +938,7 @@ void clock_early_init(void)
 {
 	struct clk_rst_ctlr *clkrst =
 		(struct clk_rst_ctlr *)NV_PA_CLK_RST_BASE;
+	struct clk_pll_info *pllinfo = &tegra_pll_info_table[CLOCK_ID_DISPLAY];
 	u32 data;
 
 	tegra210_setup_pllp();
@@ -930,6 +966,10 @@ void clock_early_init(void)
 		clock_set_rate(CLOCK_ID_CGENERAL, 125, 4, 0, 0);
 		clock_set_rate(CLOCK_ID_DISPLAY, 96, 2, 0, 12);
 		break;
+	case CLOCK_OSC_FREQ_38_4:
+		clock_set_rate(CLOCK_ID_CGENERAL, 125, 8, 0, 0);
+		clock_set_rate(CLOCK_ID_DISPLAY, 96, 4, 0, 0);
+		break;
 	default:
 		/*
 		 * These are not supported. It is too early to print a
@@ -953,9 +993,20 @@ void clock_early_init(void)
 	udelay(2);
 
 	/* PLLD_MISC: Set CLKENABLE and LOCK_DETECT bits */
-	data = (1 << PLLD_ENABLE_CLK) | (1 << PLLD_EN_LCKDET);
+	data = (1 << PLLD_ENABLE_CLK) | (1 << pllinfo->lock_ena);
 	writel(data, &clkrst->crc_pll[CLOCK_ID_DISPLAY].pll_misc);
 	udelay(2);
+}
+
+unsigned int clk_m_get_rate(unsigned parent_rate)
+{
+	struct clk_rst_ctlr *clkrst = (struct clk_rst_ctlr *)NV_PA_CLK_RST_BASE;
+	u32 value, div;
+
+	value = readl(&clkrst->crc_spare_reg0);
+	div = ((value >> 2) & 0x3) + 1;
+
+	return parent_rate / div;
 }
 
 void arch_timer_init(void)
@@ -963,13 +1014,11 @@ void arch_timer_init(void)
 	struct sysctr_ctlr *sysctr = (struct sysctr_ctlr *)NV_PA_TSC_BASE;
 	u32 freq, val;
 
-	freq = clock_get_rate(CLOCK_ID_OSC);
-	debug("%s: osc freq is %dHz [0x%08X]\n", __func__, freq, freq);
+	freq = clock_get_rate(CLOCK_ID_CLK_M);
+	debug("%s: clk_m freq is %dHz [0x%08X]\n", __func__, freq, freq);
 
-	/* ARM CNTFRQ */
-#ifndef CONFIG_ARM64
-	asm("mcr p15, 0, %0, c14, c0, 0\n" : : "r" (freq));
-#endif
+	if (current_el() == 3)
+		asm("msr cntfrq_el0, %0\n" : : "r" (freq));
 
 	/* Only Tegra114+ has the System Counter regs */
 	debug("%s: setting CNTFID0 to 0x%08X\n", __func__, freq);

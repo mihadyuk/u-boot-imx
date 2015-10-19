@@ -7,6 +7,7 @@
 
 ifndef CONFIG_SPL_BUILD
 
+obj-$(CONFIG_EFI) += efi/
 obj-$(CONFIG_RSA) += rsa/
 obj-$(CONFIG_LZMA) += lzma/
 obj-$(CONFIG_LZO) += lzo/
@@ -25,14 +26,15 @@ obj-y += crc8.o
 obj-y += crc16.o
 obj-$(CONFIG_ERRNO_STR) += errno_str.o
 obj-$(CONFIG_FIT) += fdtdec_common.o
-obj-$(CONFIG_OF_CONTROL) += fdtdec_common.o
-obj-$(CONFIG_OF_CONTROL) += fdtdec.o
+obj-$(CONFIG_$(SPL_)OF_CONTROL) += fdtdec_common.o
+obj-$(CONFIG_$(SPL_)OF_CONTROL) += fdtdec.o
 obj-$(CONFIG_TEST_FDTDEC) += fdtdec_test.o
 obj-$(CONFIG_GZIP) += gunzip.o
 obj-$(CONFIG_GZIP_COMPRESSED) += gzip.o
 obj-y += initcall.o
 obj-$(CONFIG_LMB) += lmb.o
 obj-y += ldiv.o
+obj-$(CONFIG_LZ4) += lz4_wrapper.o
 obj-$(CONFIG_MD5) += md5.o
 obj-y += net_utils.o
 obj-$(CONFIG_PHYSMEM) += physmem.o
@@ -48,11 +50,14 @@ obj-$(CONFIG_BITREVERSE) += bitrev.o
 obj-y += list_sort.o
 endif
 
-ifndef CONFIG_SPL_DISABLE_OF_CONTROL
+ifndef CONFIG_SPL_BUILD
 obj-$(CONFIG_OF_LIBFDT) += libfdt/
-obj-$(CONFIG_OF_CONTROL) += fdtdec_common.o
-obj-$(CONFIG_OF_CONTROL) += fdtdec.o
 endif
+ifdef CONFIG_SPL_OF_CONTROL
+obj-$(CONFIG_OF_LIBFDT) += libfdt/
+endif
+obj-$(CONFIG_$(SPL_)OF_CONTROL) += fdtdec_common.o
+obj-$(CONFIG_$(SPL_)OF_CONTROL) += fdtdec.o
 
 ifdef CONFIG_SPL_BUILD
 obj-$(CONFIG_SPL_YMODEM_SUPPORT) += crc16.o
