@@ -12,8 +12,8 @@
 
 #define CONFIG_T4240RDB
 #define CONFIG_PHYS_64BIT
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
+#define CONFIG_FSL_CLK
 
 #define CONFIG_FSL_SATA_V2
 #define CONFIG_PCIE4
@@ -318,7 +318,6 @@
  * Command line configuration.
  */
 #define CONFIG_CMD_DHCP
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_ERRATA
 #define CONFIG_CMD_GREPENV
 #define CONFIG_CMD_IRQ

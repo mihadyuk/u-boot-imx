@@ -8,9 +8,6 @@
 #ifndef __VEXPRESS_AEMV8A_H
 #define __VEXPRESS_AEMV8A_H
 
-/* We use generic board and device manager for v8 Versatile Express */
-#define CONFIG_SYS_GENERIC_BOARD
-
 #ifdef CONFIG_TARGET_VEXPRESS64_BASE_FVP
 #ifndef CONFIG_SEMIHOSTING
 #error CONFIG_TARGET_VEXPRESS64_BASE_FVP requires CONFIG_SEMIHOSTING
@@ -168,11 +165,13 @@
 #define CONFIG_SYS_LOAD_ADDR		(V2M_BASE + 0x10000000)
 
 /* Physical Memory Map */
-#define CONFIG_NR_DRAM_BANKS		1
+#define CONFIG_NR_DRAM_BANKS		2
 #define PHYS_SDRAM_1			(V2M_BASE)	/* SDRAM Bank #1 */
+#define PHYS_SDRAM_2			(0x880000000)
 /* Top 16MB reserved for secure world use */
 #define DRAM_SEC_SIZE		0x01000000
 #define PHYS_SDRAM_1_SIZE	0x80000000 - DRAM_SEC_SIZE
+#define PHYS_SDRAM_2_SIZE	0x180000000
 #define CONFIG_SYS_SDRAM_BASE	PHYS_SDRAM_1
 
 /* Enable memtest */

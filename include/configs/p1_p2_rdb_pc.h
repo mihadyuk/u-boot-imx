@@ -10,8 +10,8 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
+#define CONFIG_FSL_CLK
 
 #ifdef CONFIG_36BIT
 #define CONFIG_PHYS_64BIT
@@ -895,7 +895,6 @@
 #define CONFIG_CMD_I2C
 #define CONFIG_CMD_MII
 #define CONFIG_CMD_DATE
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_REGINFO
 
 /*

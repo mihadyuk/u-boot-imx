@@ -12,7 +12,6 @@
 #define __CONFIG_H
 
 #define CONFIG_PHYS_64BIT
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
 
 #ifdef CONFIG_C29XPCIE
@@ -494,7 +493,6 @@
  * Command line configuration.
  */
 #define CONFIG_CMD_ERRATA
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_IRQ
 #define CONFIG_CMD_MII
 #define CONFIG_CMD_PING

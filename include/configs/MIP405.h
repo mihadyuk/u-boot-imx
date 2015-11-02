@@ -21,7 +21,6 @@
 
 #define	CONFIG_SYS_TEXT_BASE	0xFFF80000
 
-#define CONFIG_SYS_GENERIC_BOARD
 
 /***********************************************************
  * Note that it may also be a MIP405T board which is a subset of the
@@ -55,7 +54,6 @@
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_EEPROM
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_FAT
 #define CONFIG_CMD_I2C
 #define CONFIG_CMD_IDE

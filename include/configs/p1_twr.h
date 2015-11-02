@@ -10,8 +10,8 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define	CONFIG_SYS_GENERIC_BOARD
 #define	CONFIG_DISPLAY_BOARDINFO
+#define CONFIG_FSL_CLK
 #if defined(CONFIG_TWR_P1025)
 #define CONFIG_BOARDNAME "TWR-P1025"
 #define CONFIG_P1025
@@ -425,7 +425,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_I2C
 #define CONFIG_CMD_MII
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_REGINFO
 
 /*

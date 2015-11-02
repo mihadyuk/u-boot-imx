@@ -796,17 +796,9 @@ The following options need to be configured:
 - vxWorks boot parameters:
 
 		bootvx constructs a valid bootline using the following
-		environments variables: bootfile, ipaddr, serverip, hostname.
+		environments variables: bootdev, bootfile, ipaddr, netmask,
+		serverip, gatewayip, hostname, othbootargs.
 		It loads the vxWorks image pointed bootfile.
-
-		CONFIG_SYS_VXWORKS_BOOT_DEVICE - The vxworks device name
-		CONFIG_SYS_VXWORKS_MAC_PTR - Ethernet 6 byte MA -address
-		CONFIG_SYS_VXWORKS_SERVERNAME - Name of the server
-		CONFIG_SYS_VXWORKS_BOOT_ADDR - Address of boot parameters
-
-		CONFIG_SYS_VXWORKS_ADD_PARAMS
-
-		Add it at the end of the bootline. E.g "u=username pw=secret"
 
 		Note: If a "bootargs" environment is defined, it will overwride
 		the defaults discussed just above.
@@ -1480,8 +1472,8 @@ The following options need to be configured:
 		CONFIG_TPM
 		Support TPM devices.
 
-		CONFIG_TPM_TIS_I2C
-		Support for i2c bus TPM devices. Only one device
+		CONFIG_TPM_TIS_INFINEON
+		Support for Infineon i2c bus TPM devices. Only one device
 		per system is supported at this time.
 
 			CONFIG_TPM_TIS_I2C_BURST_LIMITATION
@@ -3502,6 +3494,10 @@ FIT uImage format:
 		without a fastmap.
 		default: 0
 
+		CONFIG_MTD_UBI_FM_DEBUG
+		Enable UBI fastmap debug
+		default: 0
+
 - UBIFS support
 		CONFIG_CMD_UBIFS
 
@@ -5458,10 +5454,10 @@ List of environment variables (most likely not complete):
 		  unset, then it will be made silent if the U-Boot console
 		  is silent.
 
-  tftpsrcport	- If this is set, the value is used for TFTP's
+  tftpsrcp	- If this is set, the value is used for TFTP's
 		  UDP source port.
 
-  tftpdstport	- If this is set, the value is used for TFTP's UDP
+  tftpdstp	- If this is set, the value is used for TFTP's UDP
 		  destination port instead of the Well Know Port 69.
 
   tftpblocksize - Block size to use for TFTP transfers; if not set,
@@ -5474,6 +5470,14 @@ List of environment variables (most likely not complete):
 		  Lowering this value may make downloads succeed
 		  faster in networks with high packet loss rates or
 		  with unreliable TFTP servers.
+
+  tftptimeoutcountmax	- maximum count of TFTP timeouts (no
+		  unit, minimum value = 0). Defines how many timeouts
+		  can happen during a single file transfer before that
+		  transfer is aborted. The default is 10, and 0 means
+		  'no timeouts allowed'. Increasing this value may help
+		  downloads succeed with high packet loss rates, or with
+		  unreliable TFTP servers or client hardware.
 
   vlan		- When set to a value < 4095 the traffic over
 		  Ethernet is encapsulated/received over 802.1q

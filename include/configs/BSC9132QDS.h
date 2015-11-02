@@ -11,13 +11,13 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
 
 #ifdef CONFIG_BSC9132QDS
 #define CONFIG_BSC9132
 #endif
 
+#define CONFIG_FSL_CLK
 #define CONFIG_MISC_INIT_R
 
 #ifdef CONFIG_SDCARD
@@ -580,7 +580,6 @@ combinations. this should be removed later
  */
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_DHCP
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_ERRATA
 #define CONFIG_CMD_I2C
 #define CONFIG_CMD_IRQ

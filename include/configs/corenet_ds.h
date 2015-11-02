@@ -10,8 +10,8 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
+#define CONFIG_FSL_CLK
 
 #include "../board/freescale/common/ics307_clk.h"
 
@@ -628,7 +628,6 @@
  * Command line configuration.
  */
 #define CONFIG_CMD_DHCP
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_ERRATA
 #define CONFIG_CMD_GREPENV
 #define CONFIG_CMD_IRQ

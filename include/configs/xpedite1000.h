@@ -22,7 +22,6 @@
 #define CONFIG_440GX		1		/* 440 GX */
 #define CONFIG_BOARD_EARLY_INIT_F 1		/* Call board_pre_init	*/
 #define CONFIG_SYS_CLK_FREQ	33333333	/* external freq to pll */
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
 
 #define	CONFIG_SYS_TEXT_BASE	0xFFF80000
@@ -191,7 +190,6 @@ extern void out32(unsigned int, unsigned long);
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_EEPROM
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_I2C
 #define CONFIG_CMD_IRQ
 #define CONFIG_CMD_JFFS2

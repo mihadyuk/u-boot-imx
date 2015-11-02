@@ -11,9 +11,9 @@
 #ifndef __T208xQDS_H
 #define __T208xQDS_H
 
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_ICS307_REFCLK_HZ 25000000  /* ICS307 ref clk freq */
+#define CONFIG_FSL_CLK
 #define CONFIG_MMC
 #define CONFIG_USB_EHCI
 #if defined(CONFIG_PPC_T2080)
@@ -792,7 +792,6 @@ unsigned long get_board_ddr_clk(void);
  * Command line configuration.
  */
 #define CONFIG_CMD_DHCP
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_ERRATA
 #define CONFIG_CMD_GREPENV
 #define CONFIG_CMD_IRQ

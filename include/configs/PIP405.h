@@ -21,7 +21,6 @@
 
 #define	CONFIG_SYS_TEXT_BASE	0xFFF80000
 
-#define CONFIG_SYS_GENERIC_BOARD
 
 /***********************************************************
  * Clock
@@ -53,7 +52,6 @@
 #define CONFIG_CMD_SCSI
 #define CONFIG_CMD_FAT
 #define CONFIG_CMD_DATE
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_USB
 #define CONFIG_CMD_MII
 #define CONFIG_CMD_SDRAM

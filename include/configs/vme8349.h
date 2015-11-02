@@ -18,7 +18,6 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
 
 /*
@@ -373,7 +372,6 @@
     #undef CONFIG_CMD_ENV
 #endif
 
-#define CONFIG_CMD_ELF
 /* Pass Ethernet MAC to VxWorks */
 #define CONFIG_SYS_VXWORKS_MAC_PTR	0x000043f0
 

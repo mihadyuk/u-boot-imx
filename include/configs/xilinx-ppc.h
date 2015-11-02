@@ -12,7 +12,6 @@
 #ifndef __CONFIG_XLX_H
 #define __CONFIG_XLX_H
 
-#define CONFIG_SYS_GENERIC_BOARD
 
 /*
 #define DEBUG
@@ -29,7 +28,6 @@
 #define CONFIG_CMD_ASKENV
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_DIAG
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_IRQ
 #define CONFIG_CMD_REGINFO
 #undef CONFIG_CMD_JFFS2

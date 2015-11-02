@@ -44,8 +44,8 @@
 #define CONFIG_P1022
 #define CONFIG_CONTROLCENTERD
 #define CONFIG_MP			/* support multiple processors */
+#define CONFIG_FSL_CLK
 
-#define CONFIG_SYS_GENERIC_BOARD
 
 #define CONFIG_SYS_NO_FLASH
 #define CONFIG_ENABLE_36BIT_PHYS
@@ -388,7 +388,6 @@
 
 #ifndef CONFIG_TRAILBLAZER
 
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_ERRATA
 #define CONFIG_CMD_EXT2
 #define CONFIG_CMD_FAT

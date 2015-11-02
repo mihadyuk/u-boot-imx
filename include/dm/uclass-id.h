@@ -39,6 +39,7 @@ enum uclass_id {
 	UCLASS_LED,		/* Light-emitting diode (LED) */
 	UCLASS_LPC,		/* x86 'low pin count' interface */
 	UCLASS_MASS_STORAGE,	/* Mass storage device */
+	UCLASS_MISC,		/* Miscellaneous device */
 	UCLASS_MMC,		/* SD / MMC card or chip */
 	UCLASS_MOD_EXP,		/* RSA Mod Exp device */
 	UCLASS_PCH,		/* x86 platform controller hub */
@@ -49,6 +50,7 @@ enum uclass_id {
 	UCLASS_PMIC,		/* PMIC I/O device */
 	UCLASS_REGULATOR,	/* Regulator device */
 	UCLASS_RESET,		/* Reset device */
+	UCLASS_REMOTEPROC,	/* Remote Processor device */
 	UCLASS_RTC,		/* Real time clock device */
 	UCLASS_SERIAL,		/* Serial UART */
 	UCLASS_SPI,		/* SPI bus */
@@ -56,6 +58,7 @@ enum uclass_id {
 	UCLASS_SPI_GENERIC,	/* Generic SPI flash target */
 	UCLASS_SYSCON,		/* System configuration device */
 	UCLASS_THERMAL,		/* Thermal sensor */
+	UCLASS_TIMER,		/* Timer device */
 	UCLASS_TPM,		/* Trusted Platform Module TIS interface */
 	UCLASS_USB,		/* USB bus */
 	UCLASS_USB_DEV_GENERIC,	/* USB generic device */

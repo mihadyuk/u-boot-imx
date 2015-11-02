@@ -23,7 +23,6 @@
 #define CONFIG_440EPX		1		/* Specific PPC440EPx	*/
 #define CONFIG_440		1		/* ... PPC440 family	*/
 
-#define CONFIG_SYS_GENERIC_BOARD
 
 #define CONFIG_SYS_TEXT_BASE	0xFFF80000
 #define CONFIG_HOSTNAME		lwmon5
@@ -415,7 +414,6 @@
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_DIAG
 #define CONFIG_CMD_EEPROM
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_FAT
 #define CONFIG_CMD_I2C
 #define CONFIG_CMD_IRQ

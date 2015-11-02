@@ -17,9 +17,6 @@
 #ifndef __CONFIG_TI_ARMV7_COMMON_H__
 #define __CONFIG_TI_ARMV7_COMMON_H__
 
-/* Common define for many platforms. */
-#define CONFIG_SYS_GENERIC_BOARD
-
 /*
  * We typically do not contain NOR flash.  In the cases where we do, we
  * undefine this later.
@@ -56,6 +53,8 @@
 	"fdt_addr_r=0x88000000\0" \
 	"rdaddr=0x88080000\0" \
 	"ramdisk_addr_r=0x88080000\0" \
+	"scriptaddr=0x80000000\0" \
+	"pxefile_addr_r=0x80100000\0" \
 	"bootm_size=0x10000000\0"
 
 #define DEFAULT_MMC_TI_ARGS \

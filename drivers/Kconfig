@@ -46,6 +46,8 @@ source "drivers/power/Kconfig"
 
 source "drivers/ram/Kconfig"
 
+source "drivers/remoteproc/Kconfig"
+
 source "drivers/rtc/Kconfig"
 
 source "drivers/serial/Kconfig"
@@ -55,6 +57,8 @@ source "drivers/sound/Kconfig"
 source "drivers/spi/Kconfig"
 
 source "drivers/thermal/Kconfig"
+
+source "drivers/timer/Kconfig"
 
 source "drivers/tpm/Kconfig"
 

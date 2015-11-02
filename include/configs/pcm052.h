@@ -13,7 +13,6 @@
 
 #define CONFIG_VF610
 
-#define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_CPUINFO
 #define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_SYS_THUMB_BUILD
@@ -215,9 +214,6 @@
 		"then mtdparts default; " \
 		"nand erase.part ramdisk; " \
 		"nand write ${ram_addr} ramdisk ${filesize}; fi\0"
-
-/* miscellaneous commands */
-#define CONFIG_CMD_ELF
 
 /* Miscellaneous configurable options */
 #define CONFIG_SYS_LONGHELP		/* undef to save memory */
