@@ -137,7 +137,9 @@ int board_mmc_getcd(struct mmc *mmc)
 
 	switch (cfg->esdhc_base) {
 	case USDHC1_BASE_ADDR:
-		ret = !gpio_get_value(USDHC1_CD_GPIO);
+		//ret = !gpio_get_value(USDHC1_CD_GPIO);
+		/* ret = 1 means that card is always present.*/
+		ret = 1;
 		break;
 	case USDHC3_BASE_ADDR:
 		//ret = !gpio_get_value(USDHC3_CD_GPIO);
