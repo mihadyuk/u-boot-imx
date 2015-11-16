@@ -166,7 +166,7 @@ int board_mmc_init(bd_t *bis)
 	 */
 	for (index = 0; index < CONFIG_SYS_FSL_USDHC_NUM; ++index) {
 		switch (index) {
-		case 0:
+		case 1:
 			imx_iomux_v3_setup_multiple_pads(
 				usdhc3_pads, ARRAY_SIZE(usdhc3_pads));
 			usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC3_CLK);
@@ -174,7 +174,7 @@ int board_mmc_init(bd_t *bis)
 			usdhc_cfg[0].max_bus_width = 8;
 			//gpio_direction_input(USDHC3_CD_GPIO);
 			break;
-		case 1:
+		case 0:
 			imx_iomux_v3_setup_multiple_pads(
 				usdhc1_pads, ARRAY_SIZE(usdhc1_pads));
 			usdhc_cfg[1].sdhc_clk = mxc_get_clock(MXC_ESDHC_CLK);
