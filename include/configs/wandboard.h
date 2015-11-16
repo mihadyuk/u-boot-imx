@@ -241,4 +241,8 @@
 #define CONFIG_CMD_CACHE
 #endif
 
+/* debug options */
+/* Enable interactive DDR debugging. See doc/README.fsl-ddr.*/
+//#define CONFIG_FSL_DDR_INTERACTIVE
+
 #endif			       /* __CONFIG_H * */
