@@ -39,7 +39,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #define ENET_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
 
-#define USDHC1_CD_GPIO		IMX_GPIO_NR(1, 1)
+//#define USDHC1_CD_GPIO		IMX_GPIO_NR(1, 1)
 /*#define USDHC3_CD_GPIO		IMX_GPIO_NR(3, 9)*/
 /*#define ETH_PHY_RESET		IMX_GPIO_NR(3, 29)*/
 
@@ -63,7 +63,7 @@ iomux_v3_cfg_t const usdhc1_pads[] = {
 	MX6_PAD_SD1_DAT2__USDHC1_DAT2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD1_DAT3__USDHC1_DAT3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	/* Carrier MicroSD Card Detect */
-	MX6_PAD_GPIO_1__GPIO_1_1      | MUX_PAD_CTRL(NO_PAD_CTRL),
+	/*MX6_PAD_GPIO_1__GPIO_1_1      | MUX_PAD_CTRL(NO_PAD_CTRL),*/
 };
 
 static iomux_v3_cfg_t const usdhc3_pads[] = {
@@ -139,11 +139,14 @@ int board_mmc_getcd(struct mmc *mmc)
 	case USDHC1_BASE_ADDR:
 		//ret = !gpio_get_value(USDHC1_CD_GPIO);
 		/* ret = 1 means that card is always present.*/
+		/* ret = 0 means that card is absent.*/
 		ret = 1;
 		break;
 	case USDHC3_BASE_ADDR:
 		//ret = !gpio_get_value(USDHC3_CD_GPIO);
-		ret = 1;
+		ret = 0;
+		break;
+	default:
 		break;
 	}
 
@@ -176,7 +179,7 @@ int board_mmc_init(bd_t *bis)
 				usdhc1_pads, ARRAY_SIZE(usdhc1_pads));
 			usdhc_cfg[1].sdhc_clk = mxc_get_clock(MXC_ESDHC_CLK);
 			usdhc_cfg[1].max_bus_width = 4;
-			gpio_direction_input(USDHC1_CD_GPIO);
+			//gpio_direction_input(USDHC1_CD_GPIO);
 			break;
 		default:
 			printf("Warning: you configured more USDHC controllers"
