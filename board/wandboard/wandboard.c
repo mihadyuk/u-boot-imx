@@ -125,11 +125,6 @@ static void setup_iomux_enet(void)
 }
 #endif
 
-static struct fsl_esdhc_cfg usdhc_cfg[2] = {
-	{USDHC3_BASE_ADDR},
-	{USDHC1_BASE_ADDR},
-};
-
 int board_mmc_getcd(struct mmc *mmc)
 {
 	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
@@ -153,11 +148,19 @@ int board_mmc_getcd(struct mmc *mmc)
 	return ret;
 }
 
+static struct fsl_esdhc_cfg usdhc1_cfg = {
+	{USDHC1_BASE_ADDR}
+};
+
+static struct fsl_esdhc_cfg usdhc3_cfg = {
+	{USDHC3_BASE_ADDR}
+};
+
 int board_mmc_init(bd_t *bis)
 {
 	s32 status = 0;
-	u32 index = 0;
-
+	//u32 index = 0;
+#if 0
 	/*
 	 * Following map is done:
 	 * (U-boot device node)    (Physical Port)
@@ -169,16 +172,16 @@ int board_mmc_init(bd_t *bis)
 		case 1:
 			imx_iomux_v3_setup_multiple_pads(
 				usdhc3_pads, ARRAY_SIZE(usdhc3_pads));
-			usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC3_CLK);
+			usdhc_cfg[1].sdhc_clk = mxc_get_clock(MXC_ESDHC3_CLK);
 			//usdhc_cfg[0].max_bus_width = 4;
-			usdhc_cfg[0].max_bus_width = 8;
+			usdhc_cfg[1].max_bus_width = 8;
 			//gpio_direction_input(USDHC3_CD_GPIO);
 			break;
 		case 0:
 			imx_iomux_v3_setup_multiple_pads(
 				usdhc1_pads, ARRAY_SIZE(usdhc1_pads));
-			usdhc_cfg[1].sdhc_clk = mxc_get_clock(MXC_ESDHC_CLK);
-			usdhc_cfg[1].max_bus_width = 4;
+			usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC_CLK);
+			usdhc_cfg[0].max_bus_width = 4;
 			//gpio_direction_input(USDHC1_CD_GPIO);
 			break;
 		default:
@@ -190,6 +193,22 @@ int board_mmc_init(bd_t *bis)
 
 		status |= fsl_esdhc_initialize(bis, &usdhc_cfg[index]);
 	}
+#endif
+	/* init usd1 - ext microsd.*/
+	imx_iomux_v3_setup_multiple_pads(
+					usdhc1_pads, ARRAY_SIZE(usdhc1_pads));
+	usdhc1_cfg.sdhc_clk 		= mxc_get_clock(MXC_ESDHC_CLK);
+	usdhc1_cfg.max_bus_width 	= 4;
+
+	/* init usd3 emmc onboard.*/
+	imx_iomux_v3_setup_multiple_pads(
+					usdhc3_pads, ARRAY_SIZE(usdhc3_pads));
+	usdhc3_cfg.sdhc_clk 	 = mxc_get_clock(MXC_ESDHC3_CLK);
+	usdhc3_cfg.max_bus_width = 8;
+
+	/* register sd interfaces in right order.*/
+	status |= fsl_esdhc_initialize(bis, &usdhc1_cfg);
+	status |= fsl_esdhc_initialize(bis, &usdhc3_cfg);
 
 	return status;
 }
