@@ -149,11 +149,11 @@ int board_mmc_getcd(struct mmc *mmc)
 }
 
 static struct fsl_esdhc_cfg usdhc1_cfg = {
-	{USDHC1_BASE_ADDR}
+	USDHC1_BASE_ADDR
 };
 
 static struct fsl_esdhc_cfg usdhc3_cfg = {
-	{USDHC3_BASE_ADDR}
+	USDHC3_BASE_ADDR
 };
 
 int board_mmc_init(bd_t *bis)
