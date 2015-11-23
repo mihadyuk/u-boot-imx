@@ -19,7 +19,6 @@
 
 #define CONFIG_SMSC_LPC47M
 
-#define CONFIG_SYS_EARLY_PCI_INIT
 #define CONFIG_PCI_PNP
 #define CONFIG_RTL8169
 #define CONFIG_STD_DEVICES_SETTINGS     "stdin=usbkbd,vga,serial\0" \
@@ -43,7 +42,6 @@
 
 #define VIDEO_IO_OFFSET				0
 #define CONFIG_X86EMU_RAW_IO
-#define CONFIG_VGA_AS_SINGLE_DEVICE
 
 #define CONFIG_FIT_SIGNATURE
 #define CONFIG_RSA

@@ -867,18 +867,11 @@ The following options need to be configured:
 						(0-5, cf. cfb_console.c)
 			VIDEO_FB_ADRS		framebuffer address
 			VIDEO_KBD_INIT_FCT	keyboard int fct
-						(i.e. i8042_kbd_init())
+						(i.e. rx51_kp_init())
 			VIDEO_TSTC_FCT		test char fct
-						(i.e. i8042_tstc)
+						(i.e. rx51_kp_tstc)
 			VIDEO_GETC_FCT		get char fct
-						(i.e. i8042_getc)
-			CONFIG_CONSOLE_CURSOR	cursor drawing on/off
-						(requires blink timer
-						cf. i8042.c)
-			CONFIG_SYS_CONSOLE_BLINK_COUNT blink interval (cf. i8042.c)
-			CONFIG_CONSOLE_TIME	display time/date info in
-						upper right corner
-						(requires CONFIG_CMD_DATE)
+						(i.e. rx51_kp_getc)
 			CONFIG_VIDEO_LOGO	display Linux logo in
 						upper left corner
 			CONFIG_VIDEO_BMP_LOGO	use bmp_logo.h instead of
@@ -1774,21 +1767,15 @@ CBFS (Coreboot Filesystem) support
 		a default value of 65536 will be defined.
 
 - Keyboard Support:
-		CONFIG_ISA_KEYBOARD
+		See Kconfig help for available keyboard drivers.
 
-		Define this to enable standard (PC-Style) keyboard
-		support
+		CONFIG_KEYBOARD
 
-		CONFIG_I8042_KBD
-		Standard PC keyboard driver with US (is default) and
-		GERMAN key layout (switch via environment 'keymap=de') support.
-		Export function i8042_kbd_init, i8042_tstc and i8042_getc
-		for cfb_console. Supports cursor blinking.
-
-		CONFIG_CROS_EC_KEYB
-		Enables a Chrome OS keyboard using the CROS_EC interface.
-		This uses CROS_EC to communicate with a second microcontroller
-		which provides key scans on request.
+		Define this to enable a custom keyboard support.
+		This simply calls drv_keyboard_init() which must be
+		defined in your board-specific files. This option is deprecated
+		and is only used by novena. For new boards, use driver model
+		instead.
 
 - Video support:
 		CONFIG_VIDEO
@@ -1848,15 +1835,6 @@ CBFS (Coreboot Filesystem) support
 		variable, and if defined, enable the DIU as a console during
 		boot.  See the documentation file README.video for a
 		description of this variable.
-
-
-- Keyboard Support:
-		CONFIG_KEYBOARD
-
-		Define this to enable a custom keyboard support.
-		This simply calls drv_keyboard_init() which must be
-		defined in your board-specific files.
-		The only board using this so far is RBC823.
 
 - LCD Support:	CONFIG_LCD
 
@@ -2438,6 +2416,15 @@ CBFS (Coreboot Filesystem) support
 		  - CONFIG_SYS_I2C_IHS_CH3 activate hardware channel 3
 		  - CONFIG_SYS_I2C_IHS_SPEED_3 speed channel 3
 		  - CONFIG_SYS_I2C_IHS_SLAVE_3 slave addr channel 3
+		  - activate dual channel with CONFIG_SYS_I2C_IHS_DUAL
+		  - CONFIG_SYS_I2C_IHS_SPEED_0_1 speed channel 0_1
+		  - CONFIG_SYS_I2C_IHS_SLAVE_0_1 slave addr channel 0_1
+		  - CONFIG_SYS_I2C_IHS_SPEED_1_1 speed channel 1_1
+		  - CONFIG_SYS_I2C_IHS_SLAVE_1_1 slave addr channel 1_1
+		  - CONFIG_SYS_I2C_IHS_SPEED_2_1 speed channel 2_1
+		  - CONFIG_SYS_I2C_IHS_SLAVE_2_1 slave addr channel 2_1
+		  - CONFIG_SYS_I2C_IHS_SPEED_3_1 speed channel 3_1
+		  - CONFIG_SYS_I2C_IHS_SLAVE_3_1 slave addr channel 3_1
 
 		additional defines:
 
@@ -3568,6 +3555,9 @@ FIT uImage format:
 
 		CONFIG_SYS_SPL_MALLOC_START
 		Starting address of the malloc pool used in SPL.
+		When this option is set the full malloc is used in SPL and
+		it is set up by spl_init() and before that, the simple malloc()
+		can be used if CONFIG_SYS_MALLOC_F is defined.
 
 		CONFIG_SYS_SPL_MALLOC_SIZE
 		The size of the malloc pool used in SPL.

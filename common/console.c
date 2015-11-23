@@ -6,6 +6,7 @@
  */
 
 #include <common.h>
+#include <console.h>
 #include <debug_uart.h>
 #include <stdarg.h>
 #include <iomux.h>
@@ -377,6 +378,15 @@ int getc(void)
 	if (!gd->have_console)
 		return 0;
 
+#ifdef CONFIG_CONSOLE_RECORD
+	if (gd->console_in.start) {
+		int ch;
+
+		ch = membuff_getbyte(&gd->console_in);
+		if (ch != -1)
+			return 1;
+	}
+#endif
 	if (gd->flags & GD_FLG_DEVINIT) {
 		/* Get from the standard input */
 		return fgetc(stdin);
@@ -395,7 +405,12 @@ int tstc(void)
 
 	if (!gd->have_console)
 		return 0;
-
+#ifdef CONFIG_CONSOLE_RECORD
+	if (gd->console_in.start) {
+		if (membuff_peekbyte(&gd->console_in) != -1)
+			return 1;
+	}
+#endif
 	if (gd->flags & GD_FLG_DEVINIT) {
 		/* Test the standard input */
 		return ftstc(stdin);
@@ -469,6 +484,10 @@ void putc(const char c)
 		return;
 	}
 #endif
+#ifdef CONFIG_CONSOLE_RECORD
+	if (gd && (gd->flags & GD_FLG_RECORD) && gd->console_out.start)
+		membuff_putbyte(&gd->console_out, c);
+#endif
 #ifdef CONFIG_SILENT_CONSOLE
 	if (gd->flags & GD_FLG_SILENT)
 		return;
@@ -511,6 +530,10 @@ void puts(const char *s)
 		}
 		return;
 	}
+#endif
+#ifdef CONFIG_CONSOLE_RECORD
+	if (gd && (gd->flags & GD_FLG_RECORD) && gd->console_out.start)
+		membuff_put(&gd->console_out, s, strlen(s));
 #endif
 #ifdef CONFIG_SILENT_CONSOLE
 	if (gd->flags & GD_FLG_SILENT)
@@ -573,6 +596,32 @@ int vprintf(const char *fmt, va_list args)
 	puts(printbuffer);
 	return i;
 }
+
+#ifdef CONFIG_CONSOLE_RECORD
+int console_record_init(void)
+{
+	int ret;
+
+	ret = membuff_new(&gd->console_out, CONFIG_CONSOLE_RECORD_OUT_SIZE);
+	if (ret)
+		return ret;
+	ret = membuff_new(&gd->console_in, CONFIG_CONSOLE_RECORD_IN_SIZE);
+
+	return ret;
+}
+
+void console_record_reset(void)
+{
+	membuff_purge(&gd->console_out);
+	membuff_purge(&gd->console_in);
+}
+
+void console_record_reset_enable(void)
+{
+	console_record_reset();
+	gd->flags |= GD_FLG_RECORD;
+}
+#endif
 
 /* test if ctrl-c was pressed */
 static int ctrlc_disabled = 0;	/* see disable_ctrl() */

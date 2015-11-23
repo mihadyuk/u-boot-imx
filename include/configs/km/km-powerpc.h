@@ -17,6 +17,10 @@
 #define CONFIG_CMD_DTT
 #define CONFIG_JFFS2_CMDLINE
 
+/* Pass open firmware flat tree */
+#define CONFIG_OF_LIBFDT
+#define CONFIG_OF_BOARD_SETUP
+
 /* standard km ethernet_present for piggy */
 #define CONFIG_KM_COMMON_ETH_INIT
 
@@ -63,9 +67,9 @@
  * is not valid yet, which is the case for when u-boot copies itself to RAM */
 #define CONFIG_PRAM		((CONFIG_KM_PNVRAM + CONFIG_KM_PHRAM)>>10)
 
-#define CONFIG_KM_CRAMFS_ADDR	0x800000
-#define CONFIG_KM_KERNEL_ADDR	0x400000	/* 3968Kbytes */
-#define CONFIG_KM_FDT_ADDR	0x7E0000	/* 128Kbytes */
+#define CONFIG_KM_CRAMFS_ADDR	0xC00000
+#define CONFIG_KM_KERNEL_ADDR	0x400000	/* 7680Kbytes */
+#define CONFIG_KM_FDT_ADDR	0xB80000	/* 512Kbytes */
 
 /* architecture specific default bootargs */
 #define CONFIG_KM_DEF_BOOT_ARGS_CPU		""
@@ -79,6 +83,7 @@
 		"  ${filesize} && "					\
 		"protect on " __stringify(BOOTFLASH_START) "  +${filesize}\0"\
 	"set_fdthigh=true\0"						\
+	"checkfdt=true\0"						\
 	""
 
 #endif /* __CONFIG_KEYMILE_POWERPC_H */

@@ -15,6 +15,7 @@
 #if defined(CONFIG_CMD_BEDBUG)
 #include <bedbug/type.h>
 #endif
+#include <console.h>
 #ifdef CONFIG_HAS_DATAFLASH
 #include <dataflash.h>
 #endif
@@ -46,6 +47,9 @@
 #include <stdio_dev.h>
 #include <trace.h>
 #include <watchdog.h>
+#ifdef CONFIG_CMD_AMBAPP
+#include <ambapp.h>
+#endif
 #ifdef CONFIG_ADDR_MAP
 #include <asm/mmu.h>
 #endif
@@ -274,6 +278,15 @@ static int initr_malloc(void)
 	mem_malloc_init((ulong)map_sysmem(malloc_start, TOTAL_MALLOC_LEN),
 			TOTAL_MALLOC_LEN);
 	return 0;
+}
+
+static int initr_console_record(void)
+{
+#if defined(CONFIG_CONSOLE_RECORD)
+	return console_record_init();
+#else
+	return 0;
+#endif
 }
 
 #ifdef CONFIG_SYS_NONCACHED_MEMORY
@@ -559,6 +572,18 @@ static int initr_status_led(void)
 }
 #endif
 
+#if defined(CONFIG_CMD_AMBAPP) && defined(CONFIG_SYS_AMBAPP_PRINT_ON_STARTUP)
+extern int do_ambapp_print(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]);
+
+static int initr_ambapp_print(void)
+{
+	puts("AMBA:\n");
+	do_ambapp_print(NULL, 0, 0, NULL);
+
+	return 0;
+}
+#endif
+
 #if defined(CONFIG_CMD_SCSI)
 static int initr_scsi(void)
 {
@@ -715,6 +740,7 @@ init_fnc_t init_sequence_r[] = {
 #endif
 	initr_barrier,
 	initr_malloc,
+	initr_console_record,
 #ifdef CONFIG_SYS_NONCACHED_MEMORY
 	initr_noncached,
 #endif
@@ -837,8 +863,7 @@ init_fnc_t init_sequence_r[] = {
 #if defined(CONFIG_ARM) || defined(CONFIG_AVR32)
 	initr_enable_interrupts,
 #endif
-#if defined(CONFIG_X86) || defined(CONFIG_MICROBLAZE) || defined(CONFIG_AVR32) \
-	|| defined(CONFIG_M68K)
+#if defined(CONFIG_MICROBLAZE) || defined(CONFIG_AVR32) || defined(CONFIG_M68K)
 	timer_init,		/* initialize timer */
 #endif
 #if defined(CONFIG_STATUS_LED)
@@ -850,6 +875,12 @@ init_fnc_t init_sequence_r[] = {
 #endif
 #ifdef CONFIG_BOARD_LATE_INIT
 	board_late_init,
+#endif
+#if defined(CONFIG_CMD_AMBAPP)
+	ambapp_init_reloc,
+#if defined(CONFIG_SYS_AMBAPP_PRINT_ON_STARTUP)
+	initr_ambapp_print,
+#endif
 #endif
 #ifdef CONFIG_CMD_SCSI
 	INIT_FUNC_WATCHDOG_RESET

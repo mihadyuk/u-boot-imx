@@ -2,10 +2,10 @@
 # SPDX-License-Identifier:	GPL-2.0+
 #
 
-VERSION = 2015
-PATCHLEVEL = 10
+VERSION = 2016
+PATCHLEVEL = 01
 SUBLEVEL =
-EXTRAVERSION =
+EXTRAVERSION = -rc1
 NAME =
 
 # *DOCUMENTATION*
@@ -1333,6 +1333,9 @@ spl/sunxi-spl.bin: spl/u-boot-spl
 	@:
 
 spl/u-boot-spl-dtb.sfp: spl/u-boot-spl
+	@:
+
+spl/boot.bin: spl/u-boot-spl
 	@:
 
 tpl/u-boot-tpl.bin: tools prepare

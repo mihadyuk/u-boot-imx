@@ -11,6 +11,7 @@
 
 #include <config.h>
 #include <common.h>
+#include <console.h>
 #include <dm.h>
 #include <malloc.h>
 #include <net.h>
@@ -483,6 +484,9 @@ int phy_init(void)
 #endif
 #ifdef CONFIG_PHY_TERANETICS
 	phy_teranetics_init();
+#endif
+#ifdef CONFIG_PHY_TI
+	phy_ti_init();
 #endif
 #ifdef CONFIG_PHY_VITESSE
 	phy_vitesse_init();

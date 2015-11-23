@@ -19,7 +19,9 @@
 #define CONFIG_IO_TRACE
 #define CONFIG_CMD_IOTRACE
 
+#ifndef CONFIG_TIMER
 #define CONFIG_SYS_TIMER_RATE		1000000
+#endif
 
 #define CONFIG_SYS_STDIO_DEREGISTER
 
@@ -48,7 +50,6 @@
 #define CONFIG_CMD_FS_GENERIC
 #define CONFIG_CMD_MD5SUM
 
-#define CONFIG_CMD_GPIO
 
 #define CONFIG_CMD_GPT
 #define CONFIG_PARTITION_UUIDS
@@ -64,6 +65,7 @@
 #define CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_LONGHELP			/* #undef to save memory */
 #define CONFIG_SYS_CBSIZE		1024	/* Console I/O Buffer Size */
+#define CONFIG_SILENT_CONSOLE
 
 /* Print Buffer Size */
 #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
@@ -175,7 +177,7 @@
 
 #define CONFIG_KEYBOARD
 
-#define SANDBOX_SERIAL_SETTINGS		"stdin=serial,cros-ec-keyb\0" \
+#define SANDBOX_SERIAL_SETTINGS		"stdin=serial,cros-ec-keyb,usbkbd\0" \
 					"stdout=serial,lcd\0" \
 					"stderr=serial,lcd\0"
 #else
