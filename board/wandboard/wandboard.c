@@ -140,7 +140,7 @@ int board_mmc_getcd(struct mmc *mmc)
 		break;
 	case USDHC3_BASE_ADDR:
 		//ret = !gpio_get_value(USDHC3_CD_GPIO);
-		ret = 0;
+		ret = 1;
 		break;
 	default:
 		break;
