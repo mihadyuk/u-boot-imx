@@ -208,8 +208,8 @@ int board_mmc_init(bd_t *bis)
 	usdhc3_cfg.max_bus_width = 8;
 
 	/* register sd interfaces in right order.*/
-	status |= fsl_esdhc_initialize(bis, &usdhc1_cfg);
 	status |= fsl_esdhc_initialize(bis, &usdhc3_cfg);
+	status |= fsl_esdhc_initialize(bis, &usdhc1_cfg);
 
 	return status;
 }
