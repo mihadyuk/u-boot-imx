@@ -27,7 +27,7 @@
 #define CONFIG_DIMM_SLOTS_PER_CTLR	1
 /* Physical Memory Map */
 #define CONFIG_CHIP_SELECTS_PER_CTRL	4
-#define CONFIG_NR_DRAM_BANKS		1
+#define CONFIG_NR_DRAM_BANKS		2
 
 #define CONFIG_SYS_SPD_BUS_NUM		0
 
@@ -222,6 +222,16 @@
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	3
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	5
 
+/* DSPI */
+#define CONFIG_FSL_DSPI
+#ifdef CONFIG_FSL_DSPI
+#define CONFIG_CMD_SF
+#define CONFIG_DM_SPI_FLASH
+#define CONFIG_SPI_FLASH_STMICRO
+#define CONFIG_SF_DEFAULT_BUS		1
+#define CONFIG_SF_DEFAULT_CS		0
+#endif
+
 /*
  * Environment
  */
@@ -267,5 +277,28 @@
 
 #define CONFIG_ETHPRIME			"FM1@DTSEC3"
 #endif
+
+/* USB */
+#define CONFIG_HAS_FSL_XHCI_USB
+#ifdef CONFIG_HAS_FSL_XHCI_USB
+#define CONFIG_USB_XHCI
+#define CONFIG_USB_XHCI_FSL
+#define CONFIG_USB_XHCI_DWC3
+#define CONFIG_USB_MAX_CONTROLLER_COUNT		3
+#define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS	2
+#define CONFIG_CMD_USB
+#define CONFIG_USB_STORAGE
+#define CONFIG_CMD_EXT2
+#endif
+
+#ifdef CONFIG_SECURE_BOOT
+#define CONFIG_CMD_HASH
+#define CONFIG_SHA_HW_ACCEL
+#define CONFIG_CMD_BLOB
+/* For LS1043 (ARMv8), ESBC image Address in Header is 64 bit */
+#define CONFIG_ESBC_ADDR_64BIT
+#endif
+
+#include <asm/fsl_secure_boot.h>
 
 #endif /* __LS1043ARDB_H__ */

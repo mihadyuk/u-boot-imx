@@ -22,13 +22,10 @@
 #include <asm/arch/omap.h>
 
 /* NS16550 Configuration */
-#define CONFIG_SYS_NS16550
+#define CONFIG_SYS_NS16550_CLK		48000000
 #if defined(CONFIG_SPL_BUILD) || !defined(CONFIG_DM_SERIAL)
 #define CONFIG_SYS_NS16550_SERIAL
-#define CONFIG_SYS_NS16550_CLK		48000000
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
-#else
-#define CONFIG_OMAP_SERIAL
 #endif
 
 /* I2C Configuration */
@@ -36,7 +33,6 @@
 #define CONFIG_ENV_EEPROM_IS_ON_I2C
 #define CONFIG_SYS_I2C_EEPROM_ADDR	0x50	/* Main EEPROM */
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	2
-#define CONFIG_SYS_I2C_MULTI_EEPROMS
 
 /* Power */
 #define CONFIG_POWER
@@ -223,8 +219,6 @@
 
 /* SPI */
 #undef CONFIG_OMAP3_SPI
-#define CONFIG_TI_QSPI
-#define CONFIG_SPI_FLASH_MACRONIX
 #define CONFIG_CMD_SF
 #define CONFIG_CMD_SPI
 #define CONFIG_TI_SPI_MMAP

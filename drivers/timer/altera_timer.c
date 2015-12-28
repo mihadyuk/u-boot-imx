@@ -32,10 +32,9 @@ struct altera_timer_regs {
 
 struct altera_timer_platdata {
 	struct altera_timer_regs *regs;
-	unsigned long clock_rate;
 };
 
-static int altera_timer_get_count(struct udevice *dev, unsigned long *count)
+static int altera_timer_get_count(struct udevice *dev, u64 *count)
 {
 	struct altera_timer_platdata *plat = dev->platdata;
 	struct altera_timer_regs *const regs = plat->regs;
@@ -47,18 +46,15 @@ static int altera_timer_get_count(struct udevice *dev, unsigned long *count)
 	/* Read timer value */
 	val = readl(&regs->snapl) & 0xffff;
 	val |= (readl(&regs->snaph) & 0xffff) << 16;
-	*count = ~val;
+	*count = timer_conv_64(~val);
 
 	return 0;
 }
 
 static int altera_timer_probe(struct udevice *dev)
 {
-	struct timer_dev_priv *uc_priv = dev_get_uclass_priv(dev);
 	struct altera_timer_platdata *plat = dev->platdata;
 	struct altera_timer_regs *const regs = plat->regs;
-
-	uc_priv->clock_rate = plat->clock_rate;
 
 	writel(0, &regs->status);
 	writel(0, &regs->control);
@@ -78,8 +74,6 @@ static int altera_timer_ofdata_to_platdata(struct udevice *dev)
 	plat->regs = map_physmem(dev_get_addr(dev),
 				 sizeof(struct altera_timer_regs),
 				 MAP_NOCACHE);
-	plat->clock_rate = fdtdec_get_int(gd->fdt_blob, dev->of_offset,
-		"clock-frequency", 0);
 
 	return 0;
 }

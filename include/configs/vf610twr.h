@@ -96,11 +96,9 @@
 #define CONFIG_PHY_MICREL
 
 /* QSPI Configs*/
-#define CONFIG_FSL_QSPI
 
 #ifdef CONFIG_FSL_QSPI
 #define CONFIG_CMD_SF
-#define CONFIG_SPI_FLASH_SPANSION
 #define FSL_QSPI_FLASH_SIZE		(1 << 24)
 #define FSL_QSPI_FLASH_NUM		2
 #define CONFIG_SYS_FSL_QSPI_LE

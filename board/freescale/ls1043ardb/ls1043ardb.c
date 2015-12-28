@@ -18,6 +18,8 @@
 #include <fsl_csu.h>
 #include <fsl_esdhc.h>
 #include <fsl_ifc.h>
+#include <environment.h>
+#include <fsl_sec.h>
 #include "cpld.h"
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -69,7 +71,23 @@ int dram_init(void)
 
 int board_early_init_f(void)
 {
+	struct ccsr_scfg *scfg = (struct ccsr_scfg *)CONFIG_SYS_FSL_SCFG_ADDR;
+	u32 usb_pwrfault;
+
 	fsl_lsch2_early_init_f();
+
+#ifdef CONFIG_HAS_FSL_XHCI_USB
+	out_be32(&scfg->rcwpmuxcr0, 0x3333);
+	out_be32(&scfg->usbdrvvbus_selcr, SCFG_USBDRVVBUS_SELCR_USB1);
+	usb_pwrfault = (SCFG_USBPWRFAULT_DEDICATED <<
+			SCFG_USBPWRFAULT_USB3_SHIFT) |
+			(SCFG_USBPWRFAULT_DEDICATED <<
+			SCFG_USBPWRFAULT_USB2_SHIFT) |
+			(SCFG_USBPWRFAULT_SHARED <<
+			 SCFG_USBPWRFAULT_USB1_SHIFT);
+	out_be32(&scfg->usbpwrfault_selcr, usb_pwrfault);
+#endif
+
 	return 0;
 }
 
@@ -107,13 +125,37 @@ int config_board_mux(void)
 int misc_init_r(void)
 {
 	config_board_mux();
-
+#ifdef CONFIG_SECURE_BOOT
+	/* In case of Secure Boot, the IBR configures the SMMU
+	 * to allow only Secure transactions.
+	 * SMMU must be reset in bypass mode.
+	 * Set the ClientPD bit and Clear the USFCFG Bit
+	 */
+	u32 val;
+	val = (in_le32(SMMU_SCR0) | SCR0_CLIENTPD_MASK) & ~(SCR0_USFCFG_MASK);
+	out_le32(SMMU_SCR0, val);
+	val = (in_le32(SMMU_NSCR0) | SCR0_CLIENTPD_MASK) & ~(SCR0_USFCFG_MASK);
+	out_le32(SMMU_NSCR0, val);
+#endif
+#ifdef CONFIG_FSL_CAAM
+	return sec_init();
+#endif
 	return 0;
 }
 #endif
 
 int ft_board_setup(void *blob, bd_t *bd)
 {
+	u64 base[CONFIG_NR_DRAM_BANKS];
+	u64 size[CONFIG_NR_DRAM_BANKS];
+
+	/* fixup DT for the two DDR banks */
+	base[0] = gd->bd->bi_dram[0].start;
+	size[0] = gd->bd->bi_dram[0].size;
+	base[1] = gd->bd->bi_dram[1].start;
+	size[1] = gd->bd->bi_dram[1].size;
+
+	fdt_fixup_memory_banks(blob, base, size, 2);
 	ft_cpu_setup(blob, bd);
 
 #ifdef CONFIG_SYS_DPAA_FMAN

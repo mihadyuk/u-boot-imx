@@ -51,8 +51,8 @@
 #define I2C3_BASE_ADDR				(CONFIG_SYS_IMMR + 0x01020000)
 #define I2C4_BASE_ADDR				(CONFIG_SYS_IMMR + 0x01030000)
 
-#define CONFIG_SYS_LS2085A_XHCI_USB1_ADDR	(CONFIG_SYS_IMMR + 0x02100000)
-#define CONFIG_SYS_LS2085A_XHCI_USB2_ADDR	(CONFIG_SYS_IMMR + 0x02110000)
+#define CONFIG_SYS_LS2080A_XHCI_USB1_ADDR	(CONFIG_SYS_IMMR + 0x02100000)
+#define CONFIG_SYS_LS2080A_XHCI_USB2_ADDR	(CONFIG_SYS_IMMR + 0x02110000)
 
 /* TZ Address Space Controller Definitions */
 #define TZASC1_BASE			0x01100000	/* as per CCSR map. */
@@ -69,6 +69,10 @@
 #define TZASC_REGION_ATTRIBUTES_0(x)	((TZASC1_BASE + (x * 0x10000)) + 0x110)
 #define TZASC_REGION_ID_ACCESS_0(x)	((TZASC1_BASE + (x * 0x10000)) + 0x114)
 
+/* SATA */
+#define AHCI_BASE_ADDR1				(CONFIG_SYS_IMMR + 0x02200000)
+#define AHCI_BASE_ADDR2				(CONFIG_SYS_IMMR + 0x02210000)
+
 /* PCIe */
 #define CONFIG_SYS_PCIE1_ADDR			(CONFIG_SYS_IMMR + 0x2400000)
 #define CONFIG_SYS_PCIE2_ADDR			(CONFIG_SYS_IMMR + 0x2500000)
@@ -78,6 +82,10 @@
 #define CONFIG_SYS_PCIE2_PHYS_ADDR		0x1200000000ULL
 #define CONFIG_SYS_PCIE3_PHYS_ADDR		0x1400000000ULL
 #define CONFIG_SYS_PCIE4_PHYS_ADDR		0x1600000000ULL
+/* LUT registers */
+#define PCIE_LUT_BASE				0x80000
+#define PCIE_LUT_LCTRL0				0x7F8
+#define PCIE_LUT_DBG				0x7FC
 
 /* Device Configuration */
 #define DCFG_BASE		0x01e00000
@@ -115,7 +123,9 @@ struct sys_info {
 	unsigned long freq_processor[CONFIG_MAX_CPUS];
 	unsigned long freq_systembus;
 	unsigned long freq_ddrbus;
+#ifdef CONFIG_SYS_FSL_HAS_DP_DDR
 	unsigned long freq_ddrbus2;
+#endif
 	unsigned long freq_localbus;
 	unsigned long freq_qe;
 #ifdef CONFIG_SYS_DPAA_FMAN

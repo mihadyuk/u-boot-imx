@@ -496,7 +496,6 @@ unsigned long get_board_ddr_clk(void);
 
 /* Serial Port */
 #define CONFIG_CONS_INDEX	1
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		(get_bus_freq(0)/2)
@@ -568,11 +567,8 @@ unsigned long get_board_ddr_clk(void);
 /*
  * eSPI - Enhanced SPI
  */
-#define CONFIG_FSL_ESPI
 #if defined(CONFIG_T1024RDB)
-#define CONFIG_SPI_FLASH_STMICRO
 #elif defined(CONFIG_T1023RDB)
-#define CONFIG_SPI_FLASH_SPANSION
 #endif
 #define CONFIG_CMD_SF
 #define CONFIG_SPI_FLASH_BAR

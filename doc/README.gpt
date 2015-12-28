@@ -142,6 +142,10 @@ of the Primary.
 
 	   Attribute flags:
 	   Bit 0  - System partition
+	   Bit 1  - Hide from EFI
+	   Bit 2  - Legacy BIOS bootable
+	   Bit 48-63 - Defined and used by the individual partition type
+	   For Basic data partition :
 	   Bit 60 - Read-only
 	   Bit 62 - Hidden
 	   Bit 63 - Not mount
@@ -161,15 +165,50 @@ To restore GUID partition table one needs to:
    The fields 'name' and 'size' are mandatory for every partition.
    The field 'start' is optional.
 
+   If field 'size' of the last partition is 0, the partiton is extended
+   up to the end of the device.
+
    The fields 'uuid' and 'uuid_disk' are optional if CONFIG_RANDOM_UUID is
    enabled. A random uuid will be used if omitted or they point to an empty/
    non-existent environment variable. The environment variable will be set to
    the generated UUID.
 
+   The field 'bootable' is optional, it is used to mark the GPT partition
+   bootable (set attribute flags "Legacy BIOS bootable").
+     "name=u-boot,size=60MiB;name=boot,size=60Mib,bootable;name=rootfs,size=0"
+   It can be used to locate bootable disks with command
+   "part list <interface> <dev> -bootable <varname>",
+   please check out doc/README.distro for use.
+
 2. Define 'CONFIG_EFI_PARTITION' and 'CONFIG_CMD_GPT'
 
-2. From u-boot prompt type:
+3. From u-boot prompt type:
    gpt write mmc 0 $partitions
+
+Checking (validating) GPT partitions in U-Boot:
+===============================================
+
+Procedure is the same as above. The only change is at point 3.
+
+At u-boot prompt one needs to write:
+   gpt verify mmc 0 [$partitions]
+
+where [$partitions] is an optional parameter.
+
+When it is not provided, only basic checks based on CRC32 calculation for GPT
+header and PTEs are performed.
+When provided, additionally partition data - name, size and starting
+offset (last two in LBA) - are compared with data defined in '$partitions'
+environment variable.
+
+After running this command, return code is set to 0 if no errors found in
+on non-volatile medium stored GPT.
+
+Following line can be used to assess if GPT verification has succeed:
+
+U-BOOT> gpt verify mmc 0 $partitions
+U-BOOT> if test $? = 0; then echo "GPT OK"; else echo "GPT ERR"; fi
+
 
 Partition type GUID:
 ====================

@@ -114,6 +114,8 @@ void miiphy_register(const char *name,
 	if (new_dev == NULL || ldev == NULL) {
 		printf("miiphy_register: cannot allocate memory for '%s'\n",
 			name);
+		free(ldev);
+		mdio_free(new_dev);
 		return;
 	}
 
@@ -159,7 +161,7 @@ void mdio_free(struct mii_dev *bus)
 
 int mdio_register(struct mii_dev *bus)
 {
-	if (!bus || !bus->name || !bus->read || !bus->write)
+	if (!bus || !bus->read || !bus->write)
 		return -1;
 
 	/* check if we have unique name */

@@ -432,7 +432,6 @@ int get_env_id (void);
 
 void	pci_init      (void);
 void	pci_init_board(void);
-void	pciinfo	      (int, int);
 
 #if defined(CONFIG_PCI) && defined(CONFIG_4xx)
     int	   pci_pre_init	       (struct pci_controller *);
@@ -474,10 +473,7 @@ void	reset_phy     (void);
 void	fdc_hw_init   (void);
 
 /* $(BOARD)/eeprom.c */
-void eeprom_init  (void);
-#ifndef CONFIG_SPI
-int  eeprom_probe (unsigned dev_addr, unsigned offset);
-#endif
+void eeprom_init  (int bus);
 int  eeprom_read  (unsigned dev_addr, unsigned offset, uchar *buffer, unsigned cnt);
 int  eeprom_write (unsigned dev_addr, unsigned offset, uchar *buffer, unsigned cnt);
 

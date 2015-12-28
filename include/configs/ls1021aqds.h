@@ -375,7 +375,6 @@ unsigned long get_board_ddr_clk(void);
 #define CONFIG_LPUART_32B_REG
 #else
 #define CONFIG_CONS_INDEX		1
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		get_serial_clock()
@@ -414,14 +413,11 @@ unsigned long get_board_ddr_clk(void);
 /* SPI */
 #ifdef CONFIG_QSPI_BOOT
 /* QSPI */
-#define CONFIG_FSL_QSPI
 #define QSPI0_AMBA_BASE			0x40000000
 #define FSL_QSPI_FLASH_SIZE		(1 << 24)
 #define FSL_QSPI_FLASH_NUM		2
-#define CONFIG_SPI_FLASH_SPANSION
 
 /* DSPI */
-#define CONFIG_FSL_DSPI
 
 /* DM SPI */
 #if defined(CONFIG_FSL_DSPI) || defined(CONFIG_FSL_QSPI)
@@ -579,14 +575,14 @@ unsigned long get_board_ddr_clk(void);
 #ifdef CONFIG_LPUART
 #define CONFIG_EXTRA_ENV_SETTINGS       \
 	"bootargs=root=/dev/ram0 rw console=ttyLP0,115200\0" \
-	"fdt_high=0xcfffffff\0"         \
-	"initrd_high=0xcfffffff\0"      \
+	"fdt_high=0xffffffff\0"         \
+	"initrd_high=0xffffffff\0"      \
 	"hwconfig=fsl_ddr:ctlr_intlv=null,bank_intlv=null\0"
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"bootargs=root=/dev/ram0 rw console=ttyS0,115200\0" \
-	"fdt_high=0xcfffffff\0"		\
-	"initrd_high=0xcfffffff\0"      \
+	"fdt_high=0xffffffff\0"		\
+	"initrd_high=0xffffffff\0"      \
 	"hwconfig=fsl_ddr:ctlr_intlv=null,bank_intlv=null\0"
 #endif
 

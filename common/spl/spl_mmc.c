@@ -23,12 +23,13 @@ static int mmc_load_image_raw_sector(struct mmc *mmc, unsigned long sector)
 	unsigned long count;
 	u32 image_size_sectors;
 	struct image_header *header;
+	int dev_num = mmc->block_dev.dev;
 
 	header = (struct image_header *)(CONFIG_SYS_TEXT_BASE -
 					 sizeof(struct image_header));
 
 	/* read image header to find the image size & load address */
-	count = mmc->block_dev.block_read(0, sector, 1, header);
+	count = mmc->block_dev.block_read(dev_num, sector, 1, header);
 	debug("read sector %lx, count=%lu\n", sector, count);
 	if (count == 0)
 		goto end;
@@ -45,7 +46,7 @@ static int mmc_load_image_raw_sector(struct mmc *mmc, unsigned long sector)
 			     mmc->read_bl_len;
 
 	/* Read the header too to avoid extra memcpy */
-	count = mmc->block_dev.block_read(0, sector, image_size_sectors,
+	count = mmc->block_dev.block_read(dev_num, sector, image_size_sectors,
 					  (void *)(ulong)spl_image.load_addr);
 	debug("read %x sectors to %x\n", image_size_sectors,
 	      spl_image.load_addr);
@@ -78,10 +79,11 @@ int spl_mmc_get_device_index(u32 boot_device)
 	return -ENODEV;
 }
 
-#ifdef CONFIG_DM_MMC
-static int spl_mmc_find_device(struct mmc **mmc, u32 boot_device)
+static int spl_mmc_find_device(struct mmc **mmcp, u32 boot_device)
 {
+#ifdef CONFIG_DM_MMC
 	struct udevice *dev;
+#endif
 	int err, mmc_dev;
 
 	mmc_dev = spl_mmc_get_device_index(boot_device);
@@ -96,7 +98,14 @@ static int spl_mmc_find_device(struct mmc **mmc, u32 boot_device)
 		return err;
 	}
 
+#ifdef CONFIG_DM_MMC
 	err = uclass_get_device(UCLASS_MMC, mmc_dev, &dev);
+	if (!err)
+		*mmcp = mmc_get_mmc_dev(dev);
+#else
+	*mmcp = find_mmc_device(mmc_dev);
+	err = *mmcp ? 0 : -ENODEV;
+#endif
 	if (err) {
 #ifdef CONFIG_SPL_LIBCOMMON_SUPPORT
 		printf("spl: could not find mmc device. error: %d\n", err);
@@ -104,39 +113,8 @@ static int spl_mmc_find_device(struct mmc **mmc, u32 boot_device)
 		return err;
 	}
 
-	*mmc = NULL;
-	*mmc = mmc_get_mmc_dev(dev);
-	return *mmc != NULL ? 0 : -ENODEV;
-}
-#else
-static int spl_mmc_find_device(struct mmc **mmc, u32 boot_device)
-{
-	int err, mmc_dev;
-
-	mmc_dev = spl_mmc_get_device_index(boot_device);
-	if (mmc_dev < 0)
-		return mmc_dev;
-
-	err = mmc_initialize(gd->bd);
-	if (err) {
-#ifdef CONFIG_SPL_LIBCOMMON_SUPPORT
-		printf("spl: could not initialize mmc. error: %d\n", err);
-#endif
-		return err;
-	}
-
-	/* We register only one device. So, the dev id is always 0 */
-	*mmc = find_mmc_device(mmc_dev);
-	if (!*mmc) {
-#ifdef CONFIG_SPL_LIBCOMMON_SUPPORT
-		puts("spl: mmc device not found\n");
-#endif
-		return -ENODEV;
-	}
-
 	return 0;
 }
-#endif
 
 #ifdef CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION
 static int mmc_load_image_raw_partition(struct mmc *mmc, int partition)
@@ -172,7 +150,8 @@ static int mmc_load_image_raw_os(struct mmc *mmc)
 {
 	unsigned long count;
 
-	count = mmc->block_dev.block_read(0,
+	count = mmc->block_dev.block_read(
+		mmc->block_dev.dev,
 		CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTOR,
 		CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTORS,
 		(void *) CONFIG_SYS_SPL_ARGS_ADDR);
@@ -248,7 +227,7 @@ int spl_mmc_do_fs_boot(struct mmc *mmc)
 
 int spl_mmc_load_image(u32 boot_device)
 {
-	struct mmc *mmc;
+	struct mmc *mmc = NULL;
 	u32 boot_mode;
 	int err = 0;
 	__maybe_unused int part;

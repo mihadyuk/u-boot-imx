@@ -393,7 +393,6 @@
  * Serial Port
  */
 #define CONFIG_CONS_INDEX		1
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		get_bus_freq(0)
@@ -478,10 +477,8 @@
 /*
  * eSPI - Enhanced SPI
  */
-#define CONFIG_SPI_FLASH_SPANSION
 
 #define CONFIG_HARD_SPI
-#define CONFIG_FSL_ESPI
 
 #define CONFIG_CMD_SF
 #define CONFIG_SF_DEFAULT_SPEED		10000000

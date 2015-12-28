@@ -59,7 +59,6 @@
 /*-----------------------------------------------------------------------
  * Serial Configuration
  */
-#define CONFIG_SYS_NS16550
 #define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{300, 600, 1200, 2400, 4800, \
 					 9600, 19200, 38400, 115200}
@@ -153,8 +152,6 @@
  * CPU Features
  */
 
-#define CONFIG_SYS_X86_TSC_TIMER
-
 #define CONFIG_SYS_STACK_SIZE			(32 * 1024)
 #define CONFIG_SYS_MONITOR_BASE		CONFIG_SYS_TEXT_BASE
 #define CONFIG_SYS_MALLOC_LEN			0x200000
@@ -165,10 +162,6 @@
 /*-----------------------------------------------------------------------
  * FLASH configuration
  */
-#define CONFIG_ICH_SPI
-#define CONFIG_SPI_FLASH_MACRONIX
-#define CONFIG_SPI_FLASH_WINBOND
-#define CONFIG_SPI_FLASH_GIGADEVICE
 #define CONFIG_SYS_NO_FLASH
 #define CONFIG_CMD_SF
 #define CONFIG_CMD_SF_TEST

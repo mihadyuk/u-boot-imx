@@ -99,7 +99,6 @@
 /*
  * NS16550 Configuration
  */
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #define CONFIG_SYS_NS16550_CLK		CONFIG_SYS_TCLK
@@ -221,7 +220,6 @@ int get_scl(void);
 #define	CONFIG_SYS_I2C_SOFT_SPEED	100000
 
 /* EEprom support 24C128, 24C256 valid for environment eeprom */
-#define CONFIG_SYS_I2C_MULTI_EEPROMS
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_ENABLE
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6 /* 64 Byte write page */
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	10
@@ -254,7 +252,6 @@ int get_scl(void);
 
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
 
-#define CONFIG_SPI_FLASH_STMICRO
 
 /* SPI bus claim MPP configuration */
 #define CONFIG_SYS_KW_SPI_MPP	0x0

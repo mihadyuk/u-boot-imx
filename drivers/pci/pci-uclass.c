@@ -53,6 +53,14 @@ struct pci_controller *pci_bus_to_hose(int busnum)
 	return dev_get_uclass_priv(bus);
 }
 
+struct udevice *pci_get_controller(struct udevice *dev)
+{
+	while (device_is_on_pci_bus(dev))
+		dev = dev->parent;
+
+	return dev;
+}
+
 pci_dev_t pci_get_bdf(struct udevice *dev)
 {
 	struct pci_child_platdata *pplat = dev_get_parent_platdata(dev);
@@ -680,8 +688,8 @@ static int decode_regions(struct pci_controller *hose, const void *blob,
 			  int parent_node, int node)
 {
 	int pci_addr_cells, addr_cells, size_cells;
+	phys_addr_t base = 0, size;
 	int cells_per_record;
-	phys_addr_t addr;
 	const u32 *prop;
 	int len;
 	int i;
@@ -704,6 +712,7 @@ static int decode_regions(struct pci_controller *hose, const void *blob,
 		int space_code;
 		u32 flags;
 		int type;
+		int pos;
 
 		if (len < cells_per_record)
 			break;
@@ -726,17 +735,26 @@ static int decode_regions(struct pci_controller *hose, const void *blob,
 		} else {
 			continue;
 		}
-		debug(" - type=%d\n", type);
-		pci_set_region(hose->regions + hose->region_count++, pci_addr,
-			       addr, size, type);
+		pos = -1;
+		for (i = 0; i < hose->region_count; i++) {
+			if (hose->regions[i].flags == type)
+				pos = i;
+		}
+		if (pos == -1)
+			pos = hose->region_count++;
+		debug(" - type=%d, pos=%d\n", type, pos);
+		pci_set_region(hose->regions + pos, pci_addr, addr, size, type);
 	}
 
 	/* Add a region for our local memory */
-	addr = gd->ram_size;
-	if (gd->pci_ram_top && gd->pci_ram_top < addr)
-		addr = gd->pci_ram_top;
-	pci_set_region(hose->regions + hose->region_count++, 0, 0, addr,
-		       PCI_REGION_MEM | PCI_REGION_SYS_MEMORY);
+	size = gd->ram_size;
+#ifdef CONFIG_SYS_SDRAM_BASE
+	base = CONFIG_SYS_SDRAM_BASE;
+#endif
+	if (gd->pci_ram_top && gd->pci_ram_top < base + size)
+		size = gd->pci_ram_top - base;
+	pci_set_region(hose->regions + hose->region_count++, base, base,
+		       size, PCI_REGION_MEM | PCI_REGION_SYS_MEMORY);
 
 	return 0;
 }
@@ -915,6 +933,75 @@ int pci_find_first_device(struct udevice **devp)
 		return ret;
 
 	return skip_to_next_device(bus, devp);
+}
+
+ulong pci_conv_32_to_size(ulong value, uint offset, enum pci_size_t size)
+{
+	switch (size) {
+	case PCI_SIZE_8:
+		return (value >> ((offset & 3) * 8)) & 0xff;
+	case PCI_SIZE_16:
+		return (value >> ((offset & 2) * 8)) & 0xffff;
+	default:
+		return value;
+	}
+}
+
+ulong pci_conv_size_to_32(ulong old, ulong value, uint offset,
+			  enum pci_size_t size)
+{
+	uint off_mask;
+	uint val_mask, shift;
+	ulong ldata, mask;
+
+	switch (size) {
+	case PCI_SIZE_8:
+		off_mask = 3;
+		val_mask = 0xff;
+		break;
+	case PCI_SIZE_16:
+		off_mask = 2;
+		val_mask = 0xffff;
+		break;
+	default:
+		return value;
+	}
+	shift = (offset & off_mask) * 8;
+	ldata = (value & val_mask) << shift;
+	mask = val_mask << shift;
+	value = (old & ~mask) | ldata;
+
+	return value;
+}
+
+int pci_get_regions(struct udevice *dev, struct pci_region **iop,
+		    struct pci_region **memp, struct pci_region **prefp)
+{
+	struct udevice *bus = pci_get_controller(dev);
+	struct pci_controller *hose = dev_get_uclass_priv(bus);
+	int i;
+
+	*iop = NULL;
+	*memp = NULL;
+	*prefp = NULL;
+	for (i = 0; i < hose->region_count; i++) {
+		switch (hose->regions[i].flags) {
+		case PCI_REGION_IO:
+			if (!*iop || (*iop)->size < hose->regions[i].size)
+				*iop = hose->regions + i;
+			break;
+		case PCI_REGION_MEM:
+			if (!*memp || (*memp)->size < hose->regions[i].size)
+				*memp = hose->regions + i;
+			break;
+		case (PCI_REGION_MEM | PCI_REGION_PREFETCH):
+			if (!*prefp || (*prefp)->size < hose->regions[i].size)
+				*prefp = hose->regions + i;
+			break;
+		}
+	}
+
+	return (*iop != NULL) + (*memp != NULL) + (*prefp != NULL);
 }
 
 UCLASS_DRIVER(pci) = {

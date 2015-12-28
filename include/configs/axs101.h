@@ -52,7 +52,6 @@
  * UART configuration
  */
 #define CONFIG_DW_SERIAL
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_CLK		33333333
 #define CONFIG_SYS_NS16550_MEM32
@@ -79,7 +78,6 @@
 /*
  * EEPROM configuration
  */
-#define CONFIG_SYS_I2C_MULTI_EEPROMS
 #define CONFIG_SYS_I2C_EEPROM_ADDR		(0xA8 >> 1)
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		1
 #define CONFIG_SYS_I2C_EEPROM_ADDR_OVERFLOW	1
@@ -97,14 +95,14 @@
 /*
  * Ethernet PHY configuration
  */
-#define CONFIG_PHYLIB
 #define CONFIG_MII
 #define CONFIG_PHY_GIGE
 
 /*
- * Ethernet configuration
+ * USB 1.1 configuration
  */
-#define CONFIG_DW_AUTONEG
+#define CONFIG_USB_OHCI_NEW
+#define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS 1
 
 /*
  * Commands still not supported in Kconfig

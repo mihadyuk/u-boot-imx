@@ -317,6 +317,15 @@ __weak ulong board_get_usable_ram_top(ulong total_size)
 	return gd->ram_top;
 }
 
+__weak phys_size_t board_reserve_ram_top(phys_size_t ram_size)
+{
+#ifdef CONFIG_SYS_MEM_TOP_HIDE
+	return ram_size - CONFIG_SYS_MEM_TOP_HIDE;
+#else
+	return ram_size;
+#endif
+}
+
 static int setup_dest_addr(void)
 {
 	debug("Monitor len: %08lX\n", gd->mon_len);
@@ -324,19 +333,26 @@ static int setup_dest_addr(void)
 	 * Ram is setup, size stored in gd !!
 	 */
 	debug("Ram size: %08lX\n", (ulong)gd->ram_size);
-#if defined(CONFIG_SYS_MEM_TOP_HIDE)
+#ifdef CONFIG_SYS_MEM_RESERVE_SECURE
+	/* Reserve memory for secure MMU tables, and/or security monitor */
+	gd->ram_size -= CONFIG_SYS_MEM_RESERVE_SECURE;
+	/*
+	 * Record secure memory location. Need recalcuate if memory splits
+	 * into banks, or the ram base is not zero.
+	 */
+	gd->secure_ram = gd->ram_size;
+#endif
 	/*
 	 * Subtract specified amount of memory to hide so that it won't
 	 * get "touched" at all by U-Boot. By fixing up gd->ram_size
 	 * the Linux kernel should now get passed the now "corrected"
-	 * memory size and won't touch it either. This should work
-	 * for arch/ppc and arch/powerpc. Only Linux board ports in
-	 * arch/powerpc with bootwrapper support, that recalculate the
-	 * memory size from the SDRAM controller setup will have to
-	 * get fixed.
+	 * memory size and won't touch it either. This has been used
+	 * by arch/powerpc exclusively. Now ARMv8 takes advantage of
+	 * thie mechanism. If memory is split into banks, addresses
+	 * need to be calculated.
 	 */
-	gd->ram_size -= CONFIG_SYS_MEM_TOP_HIDE;
-#endif
+	gd->ram_size = board_reserve_ram_top(gd->ram_size);
+
 #ifdef CONFIG_SYS_SDRAM_BASE
 	gd->ram_top = CONFIG_SYS_SDRAM_BASE;
 #endif
@@ -356,6 +372,20 @@ static int setup_dest_addr(void)
 #endif
 	return 0;
 }
+
+#if defined(CONFIG_SPARC)
+static int reserve_prom(void)
+{
+	/* defined in arch/sparc/cpu/leon?/prom.c */
+	extern void *__prom_start_reloc;
+	int size = 8192; /* page table = 2k, prom = 6k */
+	gd->relocaddr -= size;
+	__prom_start_reloc = map_sysmem(gd->relocaddr + 2048, size - 2048);
+	debug("Reserving %dk for PROM and page table at %08lx\n", size,
+		gd->relocaddr);
+	return 0;
+}
+#endif
 
 #if defined(CONFIG_LOGBUFFER) && !defined(CONFIG_ALT_LB_ADDR)
 static int reserve_logbuffer(void)
@@ -510,6 +540,7 @@ static int reserve_global_data(void)
 
 static int reserve_fdt(void)
 {
+#ifndef CONFIG_OF_EMBED
 	/*
 	 * If the device tree is sitting immediately above our image then we
 	 * must relocate it. If it is embedded in the data section, then it
@@ -523,6 +554,7 @@ static int reserve_fdt(void)
 		debug("Reserving %lu Bytes for FDT at: %08lx\n",
 		      gd->fdt_size, gd->start_addr_sp);
 	}
+#endif
 
 	return 0;
 }
@@ -660,12 +692,14 @@ static int setup_dram_config(void)
 
 static int reloc_fdt(void)
 {
+#ifndef CONFIG_OF_EMBED
 	if (gd->flags & GD_FLG_SKIP_RELOC)
 		return 0;
 	if (gd->new_fdt) {
 		memcpy(gd->new_fdt, gd->fdt_blob, gd->fdt_size);
 		gd->fdt_blob = gd->new_fdt;
 	}
+#endif
 
 	return 0;
 }
@@ -807,8 +841,9 @@ static init_fnc_t init_sequence_f[] = {
 	/* TODO: can we rename this to timer_init()? */
 	init_timebase,
 #endif
-#if defined(CONFIG_X86) || defined(CONFIG_ARM) || defined(CONFIG_MIPS) || \
-		defined(CONFIG_BLACKFIN) || defined(CONFIG_NDS32)
+#if defined(CONFIG_ARM) || defined(CONFIG_MIPS) || \
+		defined(CONFIG_BLACKFIN) || defined(CONFIG_NDS32) || \
+		defined(CONFIG_SPARC)
 	timer_init,		/* initialize timer */
 #endif
 #ifdef CONFIG_SYS_ALLOC_DPRAM
@@ -907,6 +942,9 @@ static init_fnc_t init_sequence_f[] = {
 #if defined(CONFIG_BLACKFIN)
 	/* Blackfin u-boot monitor should be on top of the ram */
 	reserve_uboot,
+#endif
+#if defined(CONFIG_SPARC)
+	reserve_prom,
 #endif
 #if defined(CONFIG_LOGBUFFER) && !defined(CONFIG_ALT_LB_ADDR)
 	reserve_logbuffer,
