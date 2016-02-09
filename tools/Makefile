@@ -64,7 +64,7 @@ RSA_OBJS-$(CONFIG_FIT_SIGNATURE) := $(addprefix lib/rsa/, \
 					rsa-sign.o rsa-verify.o rsa-checksum.o \
 					rsa-mod-exp.o)
 
-ROCKCHIP_OBS = lib/rc4.o rkcommon.o rkimage.o rksd.o
+ROCKCHIP_OBS = lib/rc4.o rkcommon.o rkimage.o rksd.o rkspi.o
 
 # common objs for dumpimage and mkimage
 dumpimage-mkimage-objs := aisimage.o \
@@ -156,7 +156,7 @@ ubsha1-objs := os_support.o ubsha1.o lib/sha1.o
 HOSTCFLAGS_ubsha1.o := -pedantic
 
 hostprogs-$(CONFIG_KIRKWOOD) += kwboot
-hostprogs-$(CONFIG_ARMADA_XP) += kwboot
+hostprogs-$(CONFIG_ARCH_MVEBU) += kwboot
 hostprogs-y += proftool
 hostprogs-$(CONFIG_STATIC_RELA) += relocate-rela
 

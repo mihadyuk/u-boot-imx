@@ -131,18 +131,6 @@ static int fdt_fixup_stdout(void *fdt, int chosenoff)
 			      OF_STDOUT_PATH, strlen(OF_STDOUT_PATH) + 1);
 }
 #elif defined(CONFIG_OF_STDOUT_VIA_ALIAS) && defined(CONFIG_CONS_INDEX)
-static void fdt_fill_multisername(char *sername, size_t maxlen)
-{
-	const char *outname = stdio_devices[stdout]->name;
-
-	if (strcmp(outname, "serial") > 0)
-		strncpy(sername, outname, maxlen);
-
-	/* eserial? */
-	if (strcmp(outname + 1, "serial") > 0)
-		strncpy(sername, outname + 1, maxlen);
-}
-
 static int fdt_fixup_stdout(void *fdt, int chosenoff)
 {
 	int err;
@@ -152,9 +140,7 @@ static int fdt_fixup_stdout(void *fdt, int chosenoff)
 	int len;
 	char tmp[256]; /* long enough */
 
-	fdt_fill_multisername(sername, sizeof(sername) - 1);
-	if (!sername[0])
-		sprintf(sername, "serial%d", CONFIG_CONS_INDEX - 1);
+	sprintf(sername, "serial%d", CONFIG_CONS_INDEX - 1);
 
 	aliasoff = fdt_path_offset(fdt, "/aliases");
 	if (aliasoff < 0) {
@@ -482,47 +468,49 @@ int fdt_fixup_memory(void *blob, u64 start, u64 size)
 void fdt_fixup_ethernet(void *fdt)
 {
 	int node, i, j;
-	char enet[16], *tmp, *end;
+	char *tmp, *end;
 	char mac[16];
 	const char *path;
 	unsigned char mac_addr[6];
+	int offset;
 
 	node = fdt_path_offset(fdt, "/aliases");
 	if (node < 0)
 		return;
 
-	if (!getenv("ethaddr")) {
-		if (getenv("usbethaddr")) {
-			strcpy(mac, "usbethaddr");
-		} else {
-			debug("No ethernet MAC Address defined\n");
-			return;
+	for (offset = fdt_first_property_offset(fdt, node);
+	     offset > 0;
+	     offset = fdt_next_property_offset(fdt, offset)) {
+		const char *name;
+		int len = strlen("ethernet");
+
+		path = fdt_getprop_by_offset(fdt, offset, &name, NULL);
+		if (!strncmp(name, "ethernet", len)) {
+			i = trailing_strtol(name);
+			if (i != -1) {
+				if (i == 0)
+					strcpy(mac, "ethaddr");
+				else
+					sprintf(mac, "eth%daddr", i);
+			} else {
+				continue;
+			}
+			tmp = getenv(mac);
+			if (!tmp)
+				continue;
+
+			for (j = 0; j < 6; j++) {
+				mac_addr[j] = tmp ?
+					      simple_strtoul(tmp, &end, 16) : 0;
+				if (tmp)
+					tmp = (*end) ? end + 1 : end;
+			}
+
+			do_fixup_by_path(fdt, path, "mac-address",
+					 &mac_addr, 6, 0);
+			do_fixup_by_path(fdt, path, "local-mac-address",
+					 &mac_addr, 6, 1);
 		}
-	} else {
-		strcpy(mac, "ethaddr");
-	}
-
-	i = 0;
-	while ((tmp = getenv(mac)) != NULL) {
-		sprintf(enet, "ethernet%d", i);
-		path = fdt_getprop(fdt, node, enet, NULL);
-		if (!path) {
-			debug("No alias for %s\n", enet);
-			sprintf(mac, "eth%daddr", ++i);
-			continue;
-		}
-
-		for (j = 0; j < 6; j++) {
-			mac_addr[j] = tmp ? simple_strtoul(tmp, &end, 16) : 0;
-			if (tmp)
-				tmp = (*end) ? end+1 : end;
-		}
-
-		do_fixup_by_path(fdt, path, "mac-address", &mac_addr, 6, 0);
-		do_fixup_by_path(fdt, path, "local-mac-address",
-				&mac_addr, 6, 1);
-
-		sprintf(mac, "eth%daddr", ++i);
 	}
 }
 
@@ -952,8 +940,7 @@ void fdt_del_node_and_alias(void *blob, const char *alias)
 /* Max address size we deal with */
 #define OF_MAX_ADDR_CELLS	4
 #define OF_BAD_ADDR	FDT_ADDR_T_NONE
-#define OF_CHECK_COUNTS(na, ns)	((na) > 0 && (na) <= OF_MAX_ADDR_CELLS && \
-			(ns) > 0)
+#define OF_CHECK_COUNTS(na)	((na) > 0 && (na) <= OF_MAX_ADDR_CELLS)
 
 /* Debug utility */
 #ifdef DEBUG
@@ -1121,7 +1108,7 @@ static u64 __of_translate_address(void *blob, int node_offset, const fdt32_t *in
 
 	/* Cound address cells & copy address locally */
 	bus->count_cells(blob, parent, &na, &ns);
-	if (!OF_CHECK_COUNTS(na, ns)) {
+	if (!OF_CHECK_COUNTS(na)) {
 		printf("%s: Bad cell count for %s\n", __FUNCTION__,
 		       fdt_get_name(blob, node_offset, NULL));
 		goto bail;
@@ -1148,7 +1135,7 @@ static u64 __of_translate_address(void *blob, int node_offset, const fdt32_t *in
 		/* Get new parent bus and counts */
 		pbus = &of_busses[0];
 		pbus->count_cells(blob, parent, &pna, &pns);
-		if (!OF_CHECK_COUNTS(pna, pns)) {
+		if (!OF_CHECK_COUNTS(pna)) {
 			printf("%s: Bad cell count for %s\n", __FUNCTION__,
 				fdt_get_name(blob, node_offset, NULL));
 			break;
