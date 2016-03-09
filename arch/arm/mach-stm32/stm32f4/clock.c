@@ -11,6 +11,7 @@
 #include <common.h>
 #include <asm/io.h>
 #include <asm/arch/stm32.h>
+#include <asm/arch/stm32_periph.h>
 
 #define RCC_CR_HSION		(1 << 0)
 #define RCC_CR_HSEON		(1 << 16)
@@ -50,6 +51,14 @@
 
 #define RCC_APB1ENR_PWREN	(1 << 28)
 
+/*
+ * RCC USART specific definitions
+ */
+#define RCC_ENR_USART1EN		(1 << 4)
+#define RCC_ENR_USART2EN		(1 << 17)
+#define RCC_ENR_USART3EN		(1 << 18)
+#define RCC_ENR_USART6EN		(1 <<  5)
+
 #define PWR_CR_VOS0		(1 << 14)
 #define PWR_CR_VOS1		(1 << 15)
 #define PWR_CR_VOS_MASK		0xC000
@@ -61,6 +70,21 @@
 #define FLASH_ACR_PRFTEN	(1 << 8)
 #define FLASH_ACR_ICEN		(1 << 9)
 #define FLASH_ACR_DCEN		(1 << 10)
+
+/*
+ * RCC GPIO specific definitions
+ */
+#define RCC_ENR_GPIO_A_EN	(1 << 0)
+#define RCC_ENR_GPIO_B_EN	(1 << 1)
+#define RCC_ENR_GPIO_C_EN	(1 << 2)
+#define RCC_ENR_GPIO_D_EN	(1 << 3)
+#define RCC_ENR_GPIO_E_EN	(1 << 4)
+#define RCC_ENR_GPIO_F_EN	(1 << 5)
+#define RCC_ENR_GPIO_G_EN	(1 << 6)
+#define RCC_ENR_GPIO_H_EN	(1 << 7)
+#define RCC_ENR_GPIO_I_EN	(1 << 8)
+#define RCC_ENR_GPIO_J_EN	(1 << 9)
+#define RCC_ENR_GPIO_K_EN	(1 << 10)
 
 struct pll_psc {
 	u8	pll_m;
@@ -218,6 +242,50 @@ unsigned long clock_get(enum clock clck)
 		break;
 	default:
 		return 0;
+		break;
+	}
+}
+
+void clock_setup(int peripheral)
+{
+	switch (peripheral) {
+	case USART1_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->apb2enr, RCC_ENR_USART1EN);
+		break;
+	case GPIO_A_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_A_EN);
+		break;
+	case GPIO_B_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_B_EN);
+		break;
+	case GPIO_C_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_C_EN);
+		break;
+	case GPIO_D_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_D_EN);
+		break;
+	case GPIO_E_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_E_EN);
+		break;
+	case GPIO_F_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_F_EN);
+		break;
+	case GPIO_G_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_G_EN);
+		break;
+	case GPIO_H_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_H_EN);
+		break;
+	case GPIO_I_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_I_EN);
+		break;
+	case GPIO_J_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_J_EN);
+		break;
+	case GPIO_K_CLOCK_CFG:
+		setbits_le32(&STM32_RCC->ahb1enr, RCC_ENR_GPIO_K_EN);
+		break;
+	default:
 		break;
 	}
 }

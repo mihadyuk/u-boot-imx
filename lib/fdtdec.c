@@ -27,7 +27,6 @@ static const char * const compat_names[COMPAT_COUNT] = {
 	COMPAT(NVIDIA_TEGRA20_EMC_TABLE, "nvidia,tegra20-emc-table"),
 	COMPAT(NVIDIA_TEGRA20_NAND, "nvidia,tegra20-nand"),
 	COMPAT(NVIDIA_TEGRA20_PWM, "nvidia,tegra20-pwm"),
-	COMPAT(NVIDIA_TEGRA124_DC, "nvidia,tegra124-dc"),
 	COMPAT(NVIDIA_TEGRA124_SOR, "nvidia,tegra124-sor"),
 	COMPAT(NVIDIA_TEGRA124_PMC, "nvidia,tegra124-pmc"),
 	COMPAT(NVIDIA_TEGRA20_DC, "nvidia,tegra20-dc"),
@@ -829,6 +828,17 @@ int fdtdec_parse_phandle_with_args(const void *blob, int src_node,
 	rc = index < 0 ? cur_index : -ENOENT;
  err:
 	return rc;
+}
+
+int fdtdec_get_child_count(const void *blob, int node)
+{
+	int subnode;
+	int num = 0;
+
+	fdt_for_each_subnode(blob, subnode, node)
+		num++;
+
+	return num;
 }
 
 int fdtdec_get_byte_array(const void *blob, int node, const char *prop_name,

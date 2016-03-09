@@ -220,7 +220,7 @@ int board_mmc_getcd(struct mmc *mmc)
 int board_mmc_init(bd_t *bis)
 {
 	/*
-	 * (U-boot device node)    (Physical Port)
+	 * (U-Boot device node)    (Physical Port)
 	 * mmc0                    SD2
 	 * mmc1                    SD3
 	 * mmc2                    eMMC
@@ -378,7 +378,7 @@ static const struct boot_mode board_boot_modes[] = {
 	{"sd2",	 MAKE_CFGVAL(0x40, 0x28, 0x00, 0x00)},
 	{"sd3",	 MAKE_CFGVAL(0x40, 0x30, 0x00, 0x00)},
 	/* 8 bit bus width */
-	{"emmc", MAKE_CFGVAL(0x40, 0x38, 0x00, 0x00)},
+	{"emmc", MAKE_CFGVAL(0x60, 0x58, 0x00, 0x00)},
 	{NULL,	 0},
 };
 #endif

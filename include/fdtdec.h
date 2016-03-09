@@ -120,7 +120,6 @@ enum fdt_compat_id {
 	COMPAT_NVIDIA_TEGRA20_EMC_TABLE, /* Tegra20 memory timing table */
 	COMPAT_NVIDIA_TEGRA20_NAND,	/* Tegra2 NAND controller */
 	COMPAT_NVIDIA_TEGRA20_PWM,	/* Tegra 2 PWM controller */
-	COMPAT_NVIDIA_TEGRA124_DC,	/* Tegra 124 Display controller */
 	COMPAT_NVIDIA_TEGRA124_SOR,	/* Tegra 124 Serial Output Resource */
 	COMPAT_NVIDIA_TEGRA124_PMC,	/* Tegra 124 power mgmt controller */
 	COMPAT_NVIDIA_TEGRA20_DC,	/* Tegra 2 Display controller */
@@ -721,6 +720,15 @@ const u32 *fdtdec_locate_array(const void *blob, int node,
  * @return 1 if the properly is present; 0 if it isn't present
  */
 int fdtdec_get_bool(const void *blob, int node, const char *prop_name);
+
+/*
+ * Count child nodes of one parent node.
+ *
+ * @param blob	FDT blob
+ * @param node	parent node
+ * @return number of child node; 0 if there is not child node
+ */
+int fdtdec_get_child_count(const void *blob, int node);
 
 /**
  * Look in the FDT for a config item with the given name and return its value

@@ -45,6 +45,7 @@
 #include <post.h>
 #include <spi.h>
 #include <status_led.h>
+#include <timer.h>
 #include <trace.h>
 #include <video.h>
 #include <watchdog.h>
@@ -162,9 +163,6 @@ static int display_text_info(void)
 		text_base, bss_start, bss_end);
 #endif
 
-#ifdef CONFIG_MODEM_SUPPORT
-	debug("Modem Support enabled\n");
-#endif
 #ifdef CONFIG_USE_IRQ
 	debug("IRQ Stack: %08lx\n", IRQ_STACK_START);
 	debug("FIQ Stack: %08lx\n", FIQ_STACK_START);
@@ -805,6 +803,11 @@ static int initf_dm(void)
 	int ret;
 
 	ret = dm_init_and_scan(true);
+	if (ret)
+		return ret;
+#endif
+#ifdef CONFIG_TIMER_EARLY
+	ret = dm_timer_init();
 	if (ret)
 		return ret;
 #endif
