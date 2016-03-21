@@ -30,7 +30,11 @@
 #include <dwc3-omap-uboot.h>
 #include <ti-usb-phy-uboot.h>
 
+#include "../common/board_detect.h"
 #include "mux_data.h"
+
+#define board_is_x15()		board_ti_is("BBRDX15_")
+#define board_is_am572x_evm()	board_ti_is("AM572PM_")
 
 #ifdef CONFIG_DRIVER_TI_CPSW
 #include <cpsw.h>
@@ -41,8 +45,10 @@ DECLARE_GLOBAL_DATA_PTR;
 /* GPIO 7_11 */
 #define GPIO_DDR_VTT_EN 203
 
+#define SYSINFO_BOARD_NAME_MAX_LEN	45
+
 const struct omap_sysinfo sysinfo = {
-	"Board: BeagleBoard x15\n"
+	"Board: UNKNOWN(BeagleBoard X15?) REV UNKNOWN\n"
 };
 
 static const struct dmm_lisa_map_regs beagle_x15_lisa_regs = {
@@ -58,22 +64,22 @@ void emif_get_dmm_regs(const struct dmm_lisa_map_regs **dmm_lisa_regs)
 static const struct emif_regs beagle_x15_emif1_ddr3_532mhz_emif_regs = {
 	.sdram_config_init	= 0x61851b32,
 	.sdram_config		= 0x61851b32,
-	.sdram_config2		= 0x00000000,
+	.sdram_config2		= 0x08000000,
 	.ref_ctrl		= 0x000040F1,
 	.ref_ctrl_final		= 0x00001035,
-	.sdram_tim1		= 0xceef266b,
-	.sdram_tim2		= 0x328f7fda,
-	.sdram_tim3		= 0x027f88a8,
+	.sdram_tim1		= 0xcccf36ab,
+	.sdram_tim2		= 0x308f7fda,
+	.sdram_tim3		= 0x409f88a8,
 	.read_idle_ctrl		= 0x00050000,
-	.zq_config		= 0x0007190b,
+	.zq_config		= 0x5007190b,
 	.temp_alert_config	= 0x00000000,
 	.emif_ddr_phy_ctlr_1_init = 0x0024400b,
 	.emif_ddr_phy_ctlr_1	= 0x0e24400b,
 	.emif_ddr_ext_phy_ctrl_1 = 0x10040100,
-	.emif_ddr_ext_phy_ctrl_2 = 0x00740074,
-	.emif_ddr_ext_phy_ctrl_3 = 0x00780078,
-	.emif_ddr_ext_phy_ctrl_4 = 0x007c007c,
-	.emif_ddr_ext_phy_ctrl_5 = 0x007b007b,
+	.emif_ddr_ext_phy_ctrl_2 = 0x00910091,
+	.emif_ddr_ext_phy_ctrl_3 = 0x00950095,
+	.emif_ddr_ext_phy_ctrl_4 = 0x009b009b,
+	.emif_ddr_ext_phy_ctrl_5 = 0x009e009e,
 	.emif_rd_wr_lvl_rmp_win	= 0x00000000,
 	.emif_rd_wr_lvl_rmp_ctl	= 0x80000000,
 	.emif_rd_wr_lvl_ctl	= 0x00000000,
@@ -83,39 +89,35 @@ static const struct emif_regs beagle_x15_emif1_ddr3_532mhz_emif_regs = {
 /* Ext phy ctrl regs 1-35 */
 static const u32 beagle_x15_emif1_ddr3_ext_phy_ctrl_const_regs[] = {
 	0x10040100,
-	0x00740074,
-	0x00780078,
-	0x007c007c,
-	0x007b007b,
-	0x00800080,
-	0x00360036,
+	0x00910091,
+	0x00950095,
+	0x009B009B,
+	0x009E009E,
+	0x00980098,
 	0x00340034,
-	0x00360036,
 	0x00350035,
-	0x00350035,
-
-	0x01ff01ff,
-	0x01ff01ff,
-	0x01ff01ff,
-	0x01ff01ff,
-	0x01ff01ff,
-
-	0x00430043,
-	0x003e003e,
-	0x004a004a,
-	0x00470047,
-	0x00400040,
-
+	0x00340034,
+	0x00310031,
+	0x00340034,
+	0x007F007F,
+	0x007F007F,
+	0x007F007F,
+	0x007F007F,
+	0x007F007F,
+	0x00480048,
+	0x004A004A,
+	0x00520052,
+	0x00550055,
+	0x00500050,
 	0x00000000,
 	0x00600020,
 	0x40011080,
 	0x08102040,
-
-	0x00400040,
-	0x00400040,
-	0x00400040,
-	0x00400040,
-	0x00400040,
+	0x0,
+	0x0,
+	0x0,
+	0x0,
+	0x0,
 	0x0,
 	0x0,
 	0x0,
@@ -126,22 +128,22 @@ static const u32 beagle_x15_emif1_ddr3_ext_phy_ctrl_const_regs[] = {
 static const struct emif_regs beagle_x15_emif2_ddr3_532mhz_emif_regs = {
 	.sdram_config_init	= 0x61851b32,
 	.sdram_config		= 0x61851b32,
-	.sdram_config2		= 0x00000000,
+	.sdram_config2		= 0x08000000,
 	.ref_ctrl		= 0x000040F1,
 	.ref_ctrl_final		= 0x00001035,
-	.sdram_tim1		= 0xceef266b,
-	.sdram_tim2		= 0x328f7fda,
-	.sdram_tim3		= 0x027f88a8,
+	.sdram_tim1		= 0xcccf36ab,
+	.sdram_tim2		= 0x308f7fda,
+	.sdram_tim3		= 0x409f88a8,
 	.read_idle_ctrl		= 0x00050000,
-	.zq_config		= 0x0007190b,
+	.zq_config		= 0x5007190b,
 	.temp_alert_config	= 0x00000000,
 	.emif_ddr_phy_ctlr_1_init = 0x0024400b,
 	.emif_ddr_phy_ctlr_1	= 0x0e24400b,
 	.emif_ddr_ext_phy_ctrl_1 = 0x10040100,
-	.emif_ddr_ext_phy_ctrl_2 = 0x00820082,
-	.emif_ddr_ext_phy_ctrl_3 = 0x008b008b,
-	.emif_ddr_ext_phy_ctrl_4 = 0x00800080,
-	.emif_ddr_ext_phy_ctrl_5 = 0x007e007e,
+	.emif_ddr_ext_phy_ctrl_2 = 0x00910091,
+	.emif_ddr_ext_phy_ctrl_3 = 0x00950095,
+	.emif_ddr_ext_phy_ctrl_4 = 0x009b009b,
+	.emif_ddr_ext_phy_ctrl_5 = 0x009e009e,
 	.emif_rd_wr_lvl_rmp_win	= 0x00000000,
 	.emif_rd_wr_lvl_rmp_ctl	= 0x80000000,
 	.emif_rd_wr_lvl_ctl	= 0x00000000,
@@ -150,37 +152,35 @@ static const struct emif_regs beagle_x15_emif2_ddr3_532mhz_emif_regs = {
 
 static const u32 beagle_x15_emif2_ddr3_ext_phy_ctrl_const_regs[] = {
 	0x10040100,
-	0x00820082,
-	0x008b008b,
-	0x00800080,
-	0x007e007e,
-	0x00800080,
-	0x00370037,
-	0x00390039,
-	0x00360036,
-	0x00370037,
+	0x00910091,
+	0x00950095,
+	0x009B009B,
+	0x009E009E,
+	0x00980098,
+	0x00340034,
 	0x00350035,
-	0x01ff01ff,
-	0x01ff01ff,
-	0x01ff01ff,
-	0x01ff01ff,
-	0x01ff01ff,
-	0x00540054,
-	0x00540054,
-	0x004e004e,
-	0x004c004c,
-	0x00400040,
-
+	0x00340034,
+	0x00310031,
+	0x00340034,
+	0x007F007F,
+	0x007F007F,
+	0x007F007F,
+	0x007F007F,
+	0x007F007F,
+	0x00480048,
+	0x004A004A,
+	0x00520052,
+	0x00550055,
+	0x00500050,
 	0x00000000,
 	0x00600020,
 	0x40011080,
 	0x08102040,
-
-	0x00400040,
-	0x00400040,
-	0x00400040,
-	0x00400040,
-	0x00400040,
+	0x0,
+	0x0,
+	0x0,
+	0x0,
+	0x0,
 	0x0,
 	0x0,
 	0x0,
@@ -246,6 +246,66 @@ struct vcores_data beagle_x15_volts = {
 	.iva.pmic		= &tps659038,
 };
 
+#ifdef CONFIG_SPL_BUILD
+/* No env to setup for SPL */
+static inline void setup_board_eeprom_env(void) { }
+
+/* Override function to read eeprom information */
+void do_board_detect(void)
+{
+	int rc;
+
+	rc = ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
+				  CONFIG_EEPROM_CHIP_ADDRESS);
+	if (rc)
+		printf("ti_i2c_eeprom_init failed %d\n", rc);
+}
+
+#else	/* CONFIG_SPL_BUILD */
+
+/* Override function to read eeprom information: actual i2c read done by SPL*/
+void do_board_detect(void)
+{
+	char *bname = NULL;
+	int rc;
+
+	rc = ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
+				  CONFIG_EEPROM_CHIP_ADDRESS);
+	if (rc)
+		printf("ti_i2c_eeprom_init failed %d\n", rc);
+
+	if (board_is_x15())
+		bname = "BeagleBoard X15";
+	else if (board_is_am572x_evm())
+		bname = "AM572x EVM";
+
+	if (bname)
+		snprintf(sysinfo.board_string, SYSINFO_BOARD_NAME_MAX_LEN,
+			 "Board: %s REV %s\n", bname, board_ti_get_rev());
+}
+
+static void setup_board_eeprom_env(void)
+{
+	char *name = "beagle_x15";
+	int rc;
+
+	rc = ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
+				  CONFIG_EEPROM_CHIP_ADDRESS);
+	if (rc)
+		goto invalid_eeprom;
+
+	if (board_is_am572x_evm())
+		name = "am57xx_evm";
+	else
+		printf("Unidentified board claims %s in eeprom header\n",
+		       board_ti_get_name());
+
+invalid_eeprom:
+	set_board_info_env(name);
+}
+
+#endif	/* CONFIG_SPL_BUILD */
+
 void hw_data_init(void)
 {
 	*prcm = &dra7xx_prcm;
@@ -265,6 +325,8 @@ int board_init(void)
 int board_late_init(void)
 {
 	init_sata(0);
+	setup_board_eeprom_env();
+
 	/*
 	 * DEV_CTRL.DEV_ON = 1 please - else palmas switches off in 8 seconds
 	 * This is the POWERHOLD-in-Low behavior.
@@ -273,7 +335,7 @@ int board_late_init(void)
 	return 0;
 }
 
-void set_muxconf_regs_essential(void)
+void set_muxconf_regs(void)
 {
 	do_set_mux32((*ctrl)->control_padconf_core_base,
 		     early_padconf, ARRAY_SIZE(early_padconf));

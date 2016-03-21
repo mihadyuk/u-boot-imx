@@ -617,6 +617,9 @@ void disable_edma3_clocks(void);
 
 void omap_die_id(unsigned int *die_id);
 
+/* Initialize general purpose I2C(0) on the SoC */
+void gpi2c_init(void);
+
 /* ABB */
 #define OMAP_ABB_NOMINAL_OPP		0
 #define OMAP_ABB_FAST_OPP		1
@@ -710,7 +713,9 @@ static inline u8 is_dra72x(void)
 #define OMAP_SRAM_SCRATCH_VCORES_PTR    (SRAM_SCRATCH_SPACE_ADDR + 0x1C)
 #define OMAP_SRAM_SCRATCH_SYS_CTRL	(SRAM_SCRATCH_SPACE_ADDR + 0x20)
 #define OMAP_SRAM_SCRATCH_BOOT_PARAMS	(SRAM_SCRATCH_SPACE_ADDR + 0x24)
-#define OMAP5_SRAM_SCRATCH_SPACE_END	(SRAM_SCRATCH_SPACE_ADDR + 0x28)
+#define OMAP_SRAM_SCRATCH_BOARD_EEPROM_START (SRAM_SCRATCH_SPACE_ADDR + 0x28)
+#define OMAP_SRAM_SCRATCH_BOARD_EEPROM_END (SRAM_SCRATCH_SPACE_ADDR + 0x200)
+#define OMAP_SRAM_SCRATCH_SPACE_END	(OMAP_SRAM_SCRATCH_BOARD_EEPROM_END)
 
 /* Boot parameters */
 #define DEVICE_DATA_OFFSET	0x18

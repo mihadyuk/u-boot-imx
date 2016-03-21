@@ -368,6 +368,7 @@ config TARGET_AM335X_EVM
 	select DM
 	select DM_SERIAL
 	select DM_GPIO
+	select TI_I2C_BOARD_DETECT
 
 config TARGET_AM335X_SL50
 	bool "Support am335x_sl50"
@@ -380,6 +381,7 @@ config TARGET_AM43XX_EVM
 	bool "Support am43xx_evm"
 	select CPU_V7
 	select SUPPORT_SPL
+	select TI_I2C_BOARD_DETECT
 
 config TARGET_BAV335X
 	bool "Support bav335x"
@@ -448,6 +450,7 @@ config ARCH_KEYSTONE
 	bool "TI Keystone"
 	select CPU_V7
 	select SUPPORT_SPL
+	select CMD_POWEROFF
 
 config ARCH_MX7
 	bool "Freescale MX7"

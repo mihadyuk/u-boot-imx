@@ -109,7 +109,7 @@ int misc_init_r(void)
 
 	/* Reboot mode */
 
-	reboot_mode[0] = omap_reboot_mode();
+	omap_reboot_mode(reboot_mode, sizeof(reboot_mode));
 
 	if (keys[0])
 		reboot_mode[0] = 'r';
@@ -122,6 +122,9 @@ int misc_init_r(void)
 
 		omap_reboot_mode_clear();
 	} else {
+		/* Reboot mode garbage may still be valid, so clear it. */
+		omap_reboot_mode_clear();
+
 		/*
 		 * When not rebooting, valid power on reasons are either the
 		 * power button, charger plug or USB plug.
@@ -157,14 +160,9 @@ void get_board_serial(struct tag_serialnr *serialnr)
 	omap_die_id_get_board_serial(serialnr);
 }
 
-void reset_misc(void)
-{
-	omap_reboot_mode_store('u');
-}
-
 int fb_set_reboot_flag(void)
 {
-	return omap_reboot_mode_store('b');
+	return omap_reboot_mode_store("b");
 }
 
 #ifndef CONFIG_SPL_BUILD
